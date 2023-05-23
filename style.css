@@ -1,0 +1,35 @@
+html, body{
+    width: 100%;
+    background: url('/img/login.svg') no-repeat;
+    background-position:center;
+}
+
+.container{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn{
+    background-color: #4B5EF4;
+    color: #fff;
+}
+
+.btn:hover{
+    background-color: #4b5ff4d8;
+    color: #fff;
+}
+
+.nav-link{
+    color: #4B5EF4;
+}
+
+.form-control:focus{
+    border-color: #4B5EF4;
+}
+
+.form-select:focus{
+    border-color: #4B5EF4;
+}
