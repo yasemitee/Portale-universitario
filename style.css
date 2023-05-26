@@ -1,7 +1,7 @@
 html, body{
     width: 100%;
-    background: url('/img/login.svg') no-repeat;
-    background-position:center;
+    background: url('/img/sfondo-login.svg') no-repeat;
+    background-size: cover;
 }
 
 .container{
