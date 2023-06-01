@@ -1,3 +1,8 @@
+.html{
+  scroll-behavior: smooth;
+}
+
+
 .sidebar{
 background-color: #001320;
 }

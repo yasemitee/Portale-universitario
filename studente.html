@@ -24,7 +24,10 @@
     <div class="container-fluid">
       <div class="row flex-nowrap">
         <!-- Sidebar -->
-        <div class="sidebar col-auto col-md-3 col-xl-2 px-sm-2 px-0">
+        <div
+          class="sidebar col-auto col-sm-3 col-md-2 px-sm-2 px-0 position-fixed"
+          id="sidebar"
+        >
           <div
             class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100"
           >
@@ -36,7 +39,6 @@
             </a>
             <ul
               class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start"
-              id="menu"
             >
               <li class="nav-item">
                 <a
@@ -49,7 +51,7 @@
               </li>
               <li class="nav-item">
                 <a
-                  href="#"
+                  href="#carriera"
                   class="nav-link align-middle px-0 pt-3 text-white hover-underline-animation"
                 >
                   <i class="fa-solid fa-book"></i>
@@ -58,7 +60,7 @@
               </li>
               <li class="nav-item">
                 <a
-                  href="#"
+                  href="#esami"
                   class="nav-link align-middle pt-3 px-0 text-white hover-underline-animation"
                 >
                   <i class="fa-solid fa-calendar-days"></i>
@@ -91,12 +93,10 @@
         <!-- Contenuto di destra -->
         <div
           id="content"
-          data-bs-spy="scroll"
-          data-bs-target="#menu"
-          class="col py-3 overflow-y-scroll"
+          class="col py-3 overflow-y-scroll offset-1 offset-md-2 offset-sm-3"
         >
           <!-- Informazioni generali -->
-          <div class="row mx-2 my-4 p-3 shadow rounded" id="#informazioni">
+          <div class="row mx-2 my-4 p-3 shadow rounded" id="informazioni">
             <h3 class="mb-4">Informazioni generali</h3>
             <div class="d-flex mb-1">
               <label class="fs-6 fw-bold">Matricola:</label>
@@ -115,7 +115,7 @@
             </div>
           </div>
           <!-- Insegnamenti del corso -->
-          <div class="row mx-2 my-4 p-3 shadow rounded" id="#insegnamenti">
+          <div class="row mx-2 my-4 p-3 shadow rounded" id="insegnamenti">
             <h3 class="mb-4">Insegnamenti del corso di studi</h3>
             <table class="table">
               <thead>
@@ -147,6 +147,40 @@
               </tbody>
             </table>
           </div>
+          <!-- Carriera -->
+          <div class="row mx-2 my-4 p-3 shadow rounded" id="carriera">
+            <h3 class="mb-4">Carriera dello studente</h3>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">C.Esame</th>
+                  <th scope="col">Esame</th>
+                  <th scope="col">Valutazione</th>
+                  <th scope="col">Data verbalizzazione</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">1</th>
+                  <td>Mark</td>
+                  <td>Otto</td>
+                  <td>@mdo</td>
+                </tr>
+                <tr>
+                  <th scope="row">2</th>
+                  <td>Jacob</td>
+                  <td>Thornton</td>
+                  <td>@fat</td>
+                </tr>
+                <tr>
+                  <th scope="row">3</th>
+                  <td colspan="2">Larry the Bird</td>
+                  <td>@twitter</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- Iscrizione agli esami ????? -->
         </div>
       </div>
     </div>
