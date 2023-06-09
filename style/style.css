@@ -1,6 +1,6 @@
 html, body{
     width: 100%;
-    background: url('/img/sfondo-login.svg') no-repeat;
+    background-repeat: no-repeat;
     background-size: cover;
 }
 

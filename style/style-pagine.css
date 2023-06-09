@@ -2,7 +2,6 @@
   scroll-behavior: smooth;
 }
 
-
 .sidebar{
 background-color: #001320;
 }
@@ -40,3 +39,16 @@ background-color: #001320;
     transform: scaleX(1);
     transform-origin: bottom left;
   }
+
+  .custom-btn {
+    background-color: #001420;
+    color: #fff;
+  }
+
+  .custom-btn:hover {
+    background-color: #001420;
+    color: #fff;
+  }
+
+  
+
