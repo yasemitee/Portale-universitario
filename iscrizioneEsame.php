@@ -110,10 +110,10 @@ if (isset($_POST['iscrizione_esame'])) {
                     <?php } else { ?>
                         <div class="alert alert-danger mt-3">Nessun esame disponibile.</div>
                     <?php }
-                    if ($err == '' && $success != '') {
+                    if ((isset($err) || isset($success)) && $err == '' && $success != '') {
                     ?>
                         <div class="alert alert-success mx-auto my-4"><?php echo $success; ?></div>
-                    <?php } elseif ($err != '' && $success == '') {
+                    <?php } elseif ((isset($err) || isset($success)) && $err != '' && $success == '') {
                     ?>
                         <div class="alert alert-danger mx-auto my-4"><?php echo $err; ?></div>
                     <?php

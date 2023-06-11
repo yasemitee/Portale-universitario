@@ -63,14 +63,18 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
             foreach ($corsi as $corso) {
             ?>
               <div class="col">
-                <div class="card" style="width: 18rem">
+                <div class="card shadow rounded" style="width: 19rem; height:20rem; border-style: none;">
                   <div class="card-body">
                     <h5 class="card-title"><?php echo $corso['nome']; ?></h5>
-                    <h6 class="card-subtitle mb-2 text-body-secondary">
+                    <h6 class="card-subtitle mb-2 text-body-secondary"> Facoltà:
                       <?php echo $corso['facoltà']; ?>
+                      <p class="card-text">Durata corso: <?php echo $corso['durata']; ?></p>
                     </h6>
-                    <p class="card-text"><?php echo $corso['descrizione']; ?></p>
-                    <p class="card-text">Durata corso: <?php echo $corso['durata']; ?></p>
+                    <p class="card-text h-50" style="display: -webkit-box;-webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden;"><?php echo $corso['descrizione']; ?></p>
+                    <form method="POST" action="./infoCorso.php">
+                      <input type="hidden" name="corso" value="<?php echo htmlspecialchars(json_encode($corso)); ?>">
+                      <button type="submit" class="btn btn-link px-0">Leggi di più</button>
+                    </form>
                   </div>
                 </div>
               </div>

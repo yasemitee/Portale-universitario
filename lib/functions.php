@@ -112,7 +112,7 @@ function getInfoStudente($id)
 function getInsegnamentiCorso($corso)
 {
     $db = open_pg_connection();
-    $sql = "SELECT i.codice, i.nome, i.anno, i.propedeuticità, d.nome as nome_docente, d.cognome as cognome_docente
+    $sql = "SELECT i.codice, i.nome, i.anno, i.propedeuticità, i.descrizione, d.nome as nome_docente, d.cognome as cognome_docente
     FROM portale_uni.insegnamento i INNER JOIN portale_uni.docente d 
     ON i.docente_responsabile = d.id 
     WHERE i.corso_studi  = $1 
