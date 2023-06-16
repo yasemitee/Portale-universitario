@@ -17,13 +17,12 @@ session_start();
 // controlla il login
 $error_msg = '';
 
-if (isset($_POST) && isset($_POST['email']) && isset($_POST['password'])) {
-  $logged = login($_POST['email'], $_POST['password']);
+if (isset($_POST) && isset($_POST['email_login']) && isset($_POST['password_login'])) {
+  list($logged, $header) = login($_POST['email_login'], $_POST['password_login']);
   if (is_null($logged)) {
-    $error_msg = 'Credenziali errate, ripetere il login';
+    $error_msg = 'Credenziali non valide, ripetere il login';
   }
 }
-
 
 // imposta la variabile $logged se esiste una sessione aperta
 if (isset($_SESSION['user'])) {
@@ -40,6 +39,36 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
   unset($_SESSION['user']);
   $logged = null;
 }
+
+/**
+ * 
+ * LOGICA PER LA REGISTRAZIONE
+ */
+
+
+if (isset($_POST['nome'], $_POST['cognome'], $_POST['email'], $_POST['password'], $_POST['tipologiaUtente'])) {
+  $nome = $_POST['nome'];
+  $cognome = $_POST['cognome'];
+  $email = $_POST['email'];
+  $password = $_POST['password'];
+  $tipologiaUtente = $_POST['tipologiaUtente'];
+
+  if ($tipologiaUtente == 1) {
+    $tipologiaUtente = 'segreteria';
+  } elseif ($tipologiaUtente == 2) {
+    $tipologiaUtente = 'docente';
+  } elseif ($tipologiaUtente == 3) {
+    $tipologiaUtente = 'studente';
+  } else {
+    $tipologiaUtente = '';
+  }
+
+  // Controlla se la tipologia utente è stata impostata correttamente
+  if ($tipologiaUtente !== '') {
+    $registrazione = registrazione($nome, $cognome, $email, $password, $tipologiaUtente);
+  }
+}
+
 
 
 ?>
@@ -82,9 +111,9 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
           <div class="tab-pane fade show active" id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab" tabindex="0">
             <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
               <label class="form-label mt-4">Email</label>
-              <input type="email" class="form-control mb-3" name="email" placeholder="name@example.com" />
+              <input type="email" class="form-control mb-3" name="email_login" placeholder="name@example.com" />
               <label class="form-label">Password</label>
-              <input type="password" class="form-control mb-3" name="password" placeholder="inserisci la password" />
+              <input type="password" class="form-control mb-3" name="password_login" placeholder="inserisci la password" />
 
               <button type="submit" class="btn w-100 mt-3">Accedi</button>
             </form>
@@ -94,30 +123,24 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
               <div class="row mt-4">
                 <div class="col-md-6">
                   <label for="nome" class="form-label">Nome</label>
-                  <input type="nome" class="form-control mb-3" placeholder="Inserisci il nome" id="nome" />
+                  <input type="nome" class="form-control mb-3" placeholder="Inserisci il nome" name="nome" />
                 </div>
                 <div class="col-md-6">
                   <label for="cognome" class="form-label">Cognome</label>
-                  <input type="cognome" class="form-control mb-3" placeholder="Inserisci il cognome" id="cognome" />
+                  <input type="cognome" class="form-control mb-3" placeholder="Inserisci il cognome" name="cognome" />
                 </div>
               </div>
               <label class="form-label">Email</label>
-              <input type="email" class="form-control mb-3" placeholder="name@example.com" />
+              <input type="email" class="form-control mb-3" placeholder="name@example.com" name="email" />
               <label class="form-label">Password</label>
-              <input type="password" class="form-control mb-3" placeholder="Inserisci la password" />
+              <input type="password" class="form-control mb-3" placeholder="Inserisci la password" name="password" />
               <label class="form-label">Tipologia utente</label>
-              <select class="form-select mb-3" id="tipologia-utente" aria-label="Default select example">
+              <select class="form-select mb-3" id="tipologia-utente" aria-label="Default select example" name="tipologiaUtente">
                 <option selected>Scegliere la tipologia di utente</option>
                 <option value="1">Segreteria</option>
                 <option value="2">Docente</option>
                 <option value="3">Studente</option>
               </select>
-
-              <!-- Campi aggiuntivi -->
-              <div id="campi-aggiuntivi">
-                <!-- I campi aggiuntivi verranno aggiunti qui dinamicamente -->
-              </div>
-
               <button type="submit" class="btn w-100 mt-4">Registrati</button>
             </form>
           </div>
@@ -173,12 +196,27 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
           <?php
           }
           ?>
+          <?php
+          //se l'utente è loggato
+        } else if (isset($logged)) {
+          header($header);
+          exit();
+        }
+        if ((isset($registrazione))) {
+          if ($registrazione == true) {
+          ?>
+            <div class="alert alert-success mt-3">
+              <p>Registrazione avvenuta con successo! ora attendi che un segretario completi la tua registrazione</p>
+            </div>
+          <?php
+          } else {
+          ?>
+            <div class="alert alert-danger mt-3">
+              <p>Registrazione non riuscita, ti invitiamo a controllare i campi</p>
+            </div>
         <?php
-        //se l'utente è loggato
-      } else if (isset($logged)) {
-        header("Location: studente.php");
-        exit();
-      }
+          }
+        }
         ?>
         </div>
       </div>

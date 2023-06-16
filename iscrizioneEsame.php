@@ -29,9 +29,10 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
 $info = getInfoStudente($_SESSION['id']);
 $voti = getCarrieraValida($_SESSION['id']);
 
-if (isset($_POST['iscrizione_esame'])) {
-    $codice_esame = $_POST['iscrizione_esame'];
-    list($success, $err) = iscriviEsame($_SESSION['id'], $codice_esame, $info['codice_corso'], $voti);
+if (isset($_POST['codice_esame']) && isset($_POST['id_appello'])) {
+    $codice_esame = $_POST['codice_esame'];
+    $id_appello = $_POST['id_appello'];
+    list($success, $err) = iscriviEsame($_SESSION['id'], $codice_esame, $info['codice_corso'], $id_appello, $voti);
 }
 ?>
 
@@ -53,7 +54,7 @@ if (isset($_POST['iscrizione_esame'])) {
         <div class="row flex-nowrap">
             <!-- Sidebar -->
             <?php
-            include_once('lib/sidebar-esterna.php');
+            include_once('lib/sidebar-studente.php');
             ?>
             <!-- Contenuto di destra -->
             <div id="content" class="col py-3  offset-1 offset-md-2 offset-sm-3">
@@ -78,7 +79,7 @@ if (isset($_POST['iscrizione_esame'])) {
                                     <tr>
                                         <th scope="row"><?php echo $esame['codice']; ?></th>
                                         <td><?php echo $esame['nome']; ?></td>
-                                        <td class="d-none d-sm-table-cell"><?php echo $esame['appello']; ?></td>
+                                        <td class="d-none d-sm-table-cell"><?php echo $esame['data']; ?></td>
                                         <?php
                                         if (array_key_exists($esame['codice'], $voti)) {
                                         ?>
@@ -99,7 +100,8 @@ if (isset($_POST['iscrizione_esame'])) {
                                         ?>
                                         <td>
                                             <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-                                                <input type="hidden" name="iscrizione_esame" value="<?php echo $esame['codice']; ?>">
+                                                <input type="hidden" name="codice_esame" value="<?php echo $esame['codice']; ?>">
+                                                <input type="hidden" name="id_appello" value="<?php echo $esame['id_appello']; ?>">
                                                 <button type="submit" class="btn btn-light ">Iscriviti</button>
                                             </form>
                                         </td>

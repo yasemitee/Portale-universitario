@@ -51,7 +51,7 @@ if (isset($_POST) && isset($_POST['corso'])) {
         <div class="row flex-nowrap">
             <!-- Sidebar -->
             <?php
-            include_once('lib/sidebar-esterna.php');
+            include_once('lib/sidebar-studente.php');
             ?>
             <!-- Contenuto di destra -->
             <div id="content" class="col py-3 offset-1 offset-md-2 offset-sm-3">

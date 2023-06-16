@@ -46,12 +46,12 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
         <div class="row flex-nowrap">
             <!-- Sidebar -->
             <?php
-            include_once('lib/sidebar-esterna.php');
+            include_once('lib/sidebar-studente.php');
             ?>
             <!-- Contenuto di destra -->
             <div id="content" class="col py-3 offset-1 offset-md-2 offset-sm-3">
                 <div class="row mx-5 my-4 p-3 shadow rounded">
-                    <h3 class="mb-4">Informazioni generali</h3>
+                    <h3 class="mb-4">Informazioni personali</h3>
                     <div class="d-flex mb-1">
                         <?php
                         $info = getInfoStudente($_SESSION['id']);

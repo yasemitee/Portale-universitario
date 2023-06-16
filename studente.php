@@ -26,6 +26,22 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
   exit();
 }
 
+if (isset($_POST) && isset($_POST['tipo_carriera'])) {
+  $carriera = $_POST['tipo_carriera'];
+  if ($carriera == 'carriera_valida') {
+    $_SESSION['voti'] = getCarrieraValida($_SESSION['id']);
+  } elseif ($carriera == 'carriera_completa') {
+    $_SESSION['voti'] = getCarrieraCompleta($_SESSION['id']);
+  }
+  header("Location: " . $_SERVER['PHP_SELF'] . "#carriera");
+}
+
+if (isset($_POST['rimuovi_esame'])) {
+  $id_iscrizione = $_POST['rimuovi_esame'];
+  $rimozione = removeIscrizione($id_iscrizione);
+  header("Location: " . $_SERVER['PHP_SELF'] . "#esami");
+}
+
 
 ?>
 
@@ -47,13 +63,13 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
     <div class="row flex-nowrap">
       <!-- Sidebar -->
       <?php
-      include_once('lib/sidebar.php');
+      include_once('lib/sidebar-studente.php');
       ?>
       <!-- Contenuto di destra -->
       <div id="content" class="col py-3  offset-1 offset-md-2 offset-sm-3">
         <!-- Informazioni generali -->
         <div class="row mx-5 my-4 p-3 shadow rounded" id="informazioni">
-          <h3 class="mb-4">Informazioni generali</h3>
+          <h3 class="mb-4">Informazioni personali</h3>
           <div class="d-flex mb-1">
             <?php
             $info = getInfoStudente($_SESSION['id']);
@@ -121,15 +137,9 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
             </form>
           </div>
           <?php
-          if (isset($_POST) && isset($_POST['tipo_carriera'])) {
-            $carriera = $_POST['tipo_carriera'];
-            if ($carriera == 'carriera_valida') {
-              $voti = getCarrieraValida($_SESSION['id']);
-            } elseif ($carriera == 'carriera_completa') {
-              $voti = getCarrieraCompleta($_SESSION['id']);
-            }
-          }
-          if (!empty($voti)) {
+          if (isset($_SESSION['voti'])) {
+            $voti = $_SESSION['voti'];
+
           ?>
             <table class="table">
               <thead>
@@ -151,7 +161,8 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
                 <?php } ?>
               </tbody>
             </table>
-          <?php } elseif (isset($_POST['tipo_carriera'])) { ?>
+          <?php
+          } elseif (isset($_POST['tipo_carriera'])) { ?>
             <div class="alert alert-danger my-3">Nessun esame disponibile.</div>
           <?php } ?>
         </div>
@@ -169,21 +180,37 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
                   <th scope="col">C.Esame</th>
                   <th scope="col">Nome esame</th>
                   <th scope="col">Data esame</th>
+                  <th scope="col"></th>
                 </tr>
               </thead>
               <tbody>
-                <?php foreach ($iscrizioni as $iscrizione) { ?>
+                <?php
+                foreach ($iscrizioni as $iscrizione) {
+                ?>
                   <tr>
                     <th scope="row"><?php echo $iscrizione['codice']; ?></th>
                     <td><?php echo $iscrizione['nome']; ?></td>
-                    <td><?php echo $iscrizione['appello']; ?></td>
+                    <td><?php echo $iscrizione['data']; ?></td>
+                    <td>
+                      <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                        <input type="hidden" name="rimuovi_esame" value="<?php echo $iscrizione['id']; ?>">
+                        <button type="submit" class="btn btn-light ">Rimuovi</button>
+                      </form>
+                    </td>
                   </tr>
                 <?php } ?>
               </tbody>
             </table>
           <?php } else { ?>
             <div class="alert alert-secondary mt-3">Non è stata programmata nessuna iscrizione.</div>
-          <?php } ?>
+          <?php }
+
+          if (isset($_POST['rimuovi_esame']) && $rimozione == "") {
+            echo '<div class="alert alert-success mt-3">Esame rimosso con successo!</div>';
+          } elseif (isset($_POST['rimuovi_esame'])) {
+            echo '<div class="alert alert-danger mt-3">Qualcosa è andato storto nella rimozione</div>';
+          }
+          ?>
         </div>
       </div>
     </div>

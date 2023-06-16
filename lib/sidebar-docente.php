@@ -1,43 +1,35 @@
-<div class="sidebar col-auto col-sm-3 col-md-2 px-sm-2 px-0 position-fixed" id="sidebar">
+<div class="sidebar col-auto col-sm-3 col-md-3 col-lg-2 px-sm-2 px-0 position-fixed" id="sidebar">
   <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
     <a href="#" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-      <span class="fs-5 d-none d-sm-inline">Menu</span>
+      <span class="fs-5 d-none d-sm-inline">Portale UNI</span>
     </a>
     <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start">
       <li class="nav-item">
-        <a href="#" class="nav-link align-middle pt-3 px-0 pt-5 text-white hover-underline-animation">
+        <a href="docente.php" class="nav-link align-middle pt-3 px-0 pt-5 text-white hover-underline-animation">
           <i class="fa-solid fa-house"></i>
           <span class="ms-1 d-none d-sm-inline">Home</span>
         </a>
       </li>
       <li class="nav-item">
-        <a href="#carriera" class="nav-link align-middle px-0 pt-3 text-white hover-underline-animation">
+        <a href="docente.php#insegnamenti" class="nav-link align-middle px-0 pt-3 text-white hover-underline-animation">
           <i class="fa-solid fa-book"></i>
-          <span class="ms-1 d-none d-sm-inline">Carriera</span>
+          <span class="ms-1 d-none d-sm-inline">Insegnamenti</span>
         </a>
       </li>
       <li class="nav-item">
-        <a href="#esami" class="nav-link align-middle pt-3 px-0 text-white hover-underline-animation">
-          <i class="fa-solid fa-calendar-days"></i>
-          <span class="ms-1 d-none d-sm-inline">Esami</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="./corsi.php" class="nav-link align-middle pt-3 px-0 text-white hover-underline-animation">
-          <i class="fa-solid fa-graduation-cap"></i>
-          <span class="ms-1 d-none d-sm-inline">Corsi di lauera</span>
+        <a href="docente.php#gestione-esami" class="nav-link align-middle pt-3 px-0 text-white hover-underline-animation">
+          <i class="fa-solid fa-toolbox"></i>
+          <span class="ms-1 d-none d-sm-inline">Gestione esami</span>
         </a>
       </li>
       <li class="nav-item">
         <?php
         $logout_link = $_SERVER['PHP_SELF'] . "?log=del";
         ?>
-        <a href="<?php echo ($logout_link); ?>" class="nav-link align-middle px-0 pt-5 text-danger">
+        <a href="<?php echo ($logout_link); ?>" class="nav-link align-middle px-0 pt-5 ">
           <i class="fs-4 bi-house"></i>
-          <span class="ms-1 d-none d-sm-inline">Logout</span>
+          <span class="ms-1 d-none d-sm-inline text-danger ">Logout</span>
         </a>
-        <?php
-        ?>
       </li>
     </ul>
     <div class="dropdown pb-4">

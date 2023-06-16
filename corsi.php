@@ -46,24 +46,24 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
     <div class="row flex-nowrap">
       <!-- Sidebar -->
       <?php
-      include_once('lib/sidebar-esterna.php');
+      include_once('lib/sidebar-studente.php');
       ?>
       <!-- Contenuto di destra -->
       <div id="content" class="col py-3 offset-1 offset-md-2 offset-sm-3">
         <!-- Informazioni sui corsi -->
-        <div class="row mx-3 my-4 p-3 shadow rounded">
-          <h3 class=" mb-4">Informazioni sui corsi di laurea</h3>
-          <p class="text-secondary">
+        <div class="row mx-3 my-4">
+          <h2 class="mb-4">Informazioni sui corsi di laurea</h2>
+          <h4 class="text-secondary">
             Questa sezione ti permette di scoprire i diversi corsi di laurea
             offerti dall'ateneo
-          </p>
+          </h4>
           <div class="row row-cols-xl-3 g-4">
             <?php
             $corsi = getCorsi();
             foreach ($corsi as $corso) {
             ?>
               <div class="col">
-                <div class="card shadow rounded" style="width: 19rem; height:20rem; border-style: none;">
+                <div class="card mx-auto shadow rounded" style="width: 19rem; height:20rem; border-style: none;">
                   <div class="card-body">
                     <h5 class="card-title"><?php echo $corso['nome']; ?></h5>
                     <h6 class="card-subtitle mb-2 text-body-secondary"> Facoltà:

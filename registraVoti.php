@@ -26,9 +26,26 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
     exit();
 }
 
-if (isset($_POST) && isset($_POST['vecchia_password']) && isset($_POST['nuova_password'])) {
-    $err = cambiaPassword($logged, $_POST['vecchia_password'], $_POST['nuova_password']);
+
+if (isset($_GET['codice_esame']) && isset($_GET['id_appello'])) {
+    $_SESSION['codice_esame'] = $_GET['codice_esame'];
+    $_SESSION['id_appello'] = $_GET['id_appello'];
 }
+
+
+
+if (isset($_SESSION['codice_esame']) && isset($_SESSION['corso_studi'])) {
+
+    $codice_esame = $_SESSION['codice_esame'];
+    $id_appello = $_SESSION['id_appello'];
+}
+
+if (isset($_POST) && isset($_POST['matricola']) && isset($_POST['valutazione']) && isset($id_appello)) {
+    $matricola = $_POST['matricola'];
+    $valutazione = $_POST['valutazione'];
+    $err = registraVoto($matricola, $codice_esame, $valutazione, $id_appello);
+}
+
 
 ?>
 
@@ -40,9 +57,11 @@ if (isset($_POST) && isset($_POST['vecchia_password']) && isset($_POST['nuova_pa
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="style/style-pagine.css" />
+
 </head>
 
 <body>
@@ -50,23 +69,29 @@ if (isset($_POST) && isset($_POST['vecchia_password']) && isset($_POST['nuova_pa
         <div class="row flex-nowrap">
             <!-- Sidebar -->
             <?php
-            include_once('lib/sidebar-studente.php');
+            include_once('lib/sidebar-docente.php');
             ?>
             <!-- Contenuto di destra -->
-            <div id="content" class="col py-3 overflow-y-scroll offset-1 offset-md-2 offset-sm-3">
+            <div id="content" class="col py-3  offset-1 offset-md-3 offset-lg-2 offset-sm-3">
                 <div class="row mx-5 my-4 p-3 shadow rounded">
-                    <h3 class="mb-4">Cambio password</h3>
+                    <h3 class="mb-4">Inserisci le valutazioni per l'esame: <strong><?php echo $codice_esame ?></strong></h3>
                     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
-                        <label class="form-label">Password attuale</label>
-                        <input type="password" class="form-control mb-3" name="vecchia_password" placeholder="inserisci la password attuale" />
-                        <label class="form-label">Nuova password</label>
-                        <input type="password" class="form-control mb-3" name="nuova_password" placeholder="inserisci la nuova password" />
-                        <button type="submit" class="btn btn-dark w-100 mt-3">Conferma</button>
+                        <label class="col-form-label">Matricola Studente</label>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" name="matricola" placeholder="Inserisci la matricola">
+                        </div>
+                        <label class="col-form-label">Valutazione <label class="text-secondary">0 a 30</label></label>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" name="valutazione" placeholder="Inserisci la valutazione">
+                        </div>
+                        <button type="submit" class="btn custom-btn w-md-25 mt-4 p-2">Conferma</button>
                     </form>
-                    <?php if (!empty($err)) { ?>
-                        <div class="alert alert-danger  mx-auto my-4"><?php echo $err; ?></div>
-                    <?php } elseif (isset($_POST['nuova_password'])) { ?>
-                        <div class="alert alert-success mx-auto my-4"><?php echo 'La password è stata cambiata correttamente'; ?></div>
+                    <?php
+                    if (isset($_POST['matricola']) && isset($_POST['valutazione']) && empty($err)) {
+                    ?><div class="alert alert-success mt-3">Esame registrato con successo!</div>
+                    <?php
+                    } elseif (isset($_POST['matricola']) && isset($_POST['valutazione']) && !empty($err)) {
+                    ?><div class="alert alert-danger mt-3"><?php echo $err; ?></div>
                     <?php
                     }
                     ?>

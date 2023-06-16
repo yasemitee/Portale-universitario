@@ -1,23 +1,23 @@
 <div class="sidebar col-auto col-sm-3 col-md-2 px-sm-2 px-0 position-fixed" id="sidebar">
   <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
     <a href="#" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-      <span class="fs-5 d-none d-sm-inline">Menu</span>
+      <span class="fs-5 d-none d-sm-inline">Portale UNI</span>
     </a>
     <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start">
       <li class="nav-item">
-        <a href="./studente.php" class="nav-link align-middle pt-3 px-0 pt-5 text-white hover-underline-animation">
+        <a href="studente.php" class="nav-link align-middle pt-3 px-0 pt-5 text-white hover-underline-animation">
           <i class="fa-solid fa-house"></i>
           <span class="ms-1 d-none d-sm-inline">Home</span>
         </a>
       </li>
       <li class="nav-item">
-        <a href="./studente.php" class="nav-link align-middle px-0 pt-3 text-white hover-underline-animation">
+        <a href="studente.php#carriera" class="nav-link align-middle px-0 pt-3 text-white hover-underline-animation">
           <i class="fa-solid fa-book"></i>
           <span class="ms-1 d-none d-sm-inline">Carriera</span>
         </a>
       </li>
       <li class="nav-item">
-        <a href="./studente.php" class="nav-link align-middle pt-3 px-0 text-white hover-underline-animation">
+        <a href="studente.php#esami" class="nav-link align-middle pt-3 px-0 text-white hover-underline-animation">
           <i class="fa-solid fa-calendar-days"></i>
           <span class="ms-1 d-none d-sm-inline">Esami</span>
         </a>
