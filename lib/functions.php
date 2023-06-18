@@ -78,31 +78,15 @@ function login($email, $password)
     return array($logged, $header);
 }
 
-function registrazione($nome, $cognome, $email, $password, $tipo_utente)
+function registraStudente($nome, $cognome, $email, $password, $matricola, $corso_studi)
 {
-    if (empty($nome) || empty($cognome) || empty($password) || empty($tipo_utente)) {
+    if (empty($nome) || empty($cognome) || empty($password) || empty($email) || empty($matricola) || empty($corso_studi)) {
         return false;
     }
 
     $db = open_pg_connection();
 
-    switch ($tipo_utente) {
-        case 'studente':
-            $sql = "SELECT COUNT(*) FROM portale_uni.studente WHERE email = $1;";
-            break;
-
-        case 'docente':
-            $sql = "SELECT COUNT(*) FROM portale_uni.docente WHERE email = $1;";
-            break;
-
-        case 'segreteria':
-            $sql = "SELECT COUNT(*) FROM portale_uni.segreteria WHERE email = $1;";
-            break;
-
-        default:
-            close_pg_connection($db);
-            return false;
-    }
+    $sql = "SELECT COUNT(*) FROM portale_uni.studente WHERE email = $1;";
 
     $params = array(
         $email
@@ -117,36 +101,59 @@ function registrazione($nome, $cognome, $email, $password, $tipo_utente)
         return false;
     }
 
-    switch ($tipo_utente) {
-        case 'studente':
-            $sql = "INSERT INTO portale_uni.studente (email, password, nome, cognome) 
-            VALUES ($3, $4, $1, $2)";
-            break;
-
-        case 'docente':
-            $sql = "INSERT INTO portale_uni.docente (email, password, nome, cognome) 
-            VALUES ($3, $4, $1, $2)";
-            break;
-
-        case 'segreteria':
-            $sql = "INSERT INTO portale_uni.segreteria (email, password, nome, cognome) 
-            VALUES ($3, $4, $1, $2)";
-            break;
-
-        default:
-            close_pg_connection($db);
-            return false;
-    }
-
-    $params2 = array(
-        $nome,
-        $cognome,
+    $sql = "INSERT INTO portale_uni.studente (matricola, corso_studi, anno_frequenza, anno_iscrizione, email, password, nome, cognome) 
+            VALUES ($1, $2, 1,EXTRACT(year FROM CURRENT_DATE),$3, $4,$5,$6)";
+    $params = array(
+        $matricola,
+        $corso_studi,
         $email,
         $password,
+        $nome,
+        $cognome,
     );
 
-    $result = pg_prepare($db, "registrazione", $sql);
-    $result = pg_execute($db, "registrazione", $params2);
+    $result = pg_prepare($db, "registrazione_studente", $sql);
+    $result = pg_execute($db, "registrazione_studente", $params);
+
+    close_pg_connection($db);
+    return $result !== false;
+}
+
+function registraDocente($nome, $cognome, $email, $password, $specializzazione)
+{
+    if (empty($nome) || empty($cognome) || empty($password) || empty($email) || empty($specializzazione)) {
+        return false;
+    }
+
+    $db = open_pg_connection();
+
+    $sql = "SELECT COUNT(*) FROM portale_uni.docente WHERE email = $1;";
+
+    $params = array(
+        $email
+    );
+
+    $result = pg_prepare($db, "controllo_esistenza", $sql);
+    $result = pg_execute($db, "controllo_esistenza", $params);
+
+    $count = pg_fetch_result($result, 0, 0);
+    if ($count > 0) {
+        close_pg_connection($db);
+        return false;
+    }
+
+    $sql = "INSERT INTO portale_uni.docente (specializzazione, email, password, nome, cognome) 
+            VALUES ($1, $2,$3,$4,$5)";
+    $params = array(
+        $specializzazione,
+        $email,
+        $password,
+        $nome,
+        $cognome,
+    );
+
+    $result = pg_prepare($db, "registrazione_docente", $sql);
+    $result = pg_execute($db, "registrazione_docente", $params);
 
     close_pg_connection($db);
     return $result !== false;
