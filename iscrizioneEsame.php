@@ -32,7 +32,7 @@ $voti = getCarrieraValida($_SESSION['id']);
 if (isset($_POST['codice_esame']) && isset($_POST['id_appello'])) {
     $codice_esame = $_POST['codice_esame'];
     $id_appello = $_POST['id_appello'];
-    list($success, $err) = iscriviEsame($_SESSION['id'], $codice_esame, $info['codice_corso'], $id_appello, $voti);
+    $err = iscriviEsame($_SESSION['id'], $codice_esame, $info['codice_corso'], $id_appello, $voti);
 }
 ?>
 
@@ -46,7 +46,7 @@ if (isset($_POST['codice_esame']) && isset($_POST['id_appello'])) {
     <title>Document</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="style/style-pagine.css" />
+    <link rel="stylesheet" href="style/style-pagine.css?<?php echo time(); ?>" />
 </head>
 
 <body>
@@ -112,10 +112,10 @@ if (isset($_POST['codice_esame']) && isset($_POST['id_appello'])) {
                     <?php } else { ?>
                         <div class="alert alert-danger mt-3">Nessun esame disponibile.</div>
                     <?php }
-                    if ((isset($err) || isset($success)) && $err == '' && $success != '') {
+                    if (isset($err) && $err == '') {
                     ?>
-                        <div class="alert alert-success mx-auto my-4"><?php echo $success; ?></div>
-                    <?php } elseif ((isset($err) || isset($success)) && $err != '' && $success == '') {
+                        <div class="alert alert-success mx-auto my-4"><?php echo "Iscrizione andata a buon fine!"; ?></div>
+                    <?php } elseif (isset($err) && $err != '') {
                     ?>
                         <div class="alert alert-danger mx-auto my-4"><?php echo $err; ?></div>
                     <?php

@@ -233,10 +233,30 @@ function getInfoDocente($id_docente)
     close_pg_connection($db);
 }
 
+function getInfoSegretario($id_segretario)
+{
+    $db = open_pg_connection();
+    $sql = "SELECT s.nome, s.cognome, email
+    FROM portale_uni.segreteria s
+    WHERE s.id  = $1;";
+    $params = array(
+        $id_segretario
+    );
+
+    $result = pg_prepare($db, "get_info", $sql);
+    $result = pg_execute($db, "get_info", $params);
+
+    if ($row = pg_fetch_assoc($result)) {
+        return $row;
+    }
+
+    close_pg_connection($db);
+}
+
 function getInsegnamentiCorso($corso)
 {
     $db = open_pg_connection();
-    $sql = "SELECT i.codice, i.nome, i.anno, i.propedeuticità, i.descrizione, d.nome as nome_docente, d.cognome as cognome_docente
+    $sql = "SELECT i.codice, i.nome, i.anno, i.descrizione, d.nome as nome_docente, d.cognome as cognome_docente
     FROM portale_uni.insegnamento i INNER JOIN portale_uni.docente d 
     ON i.docente_responsabile = d.id 
     WHERE i.corso_studi  = $1 
@@ -259,7 +279,7 @@ function getInsegnamentiCorso($corso)
 function getInsegnamentiDocete($id_docente)
 {
     $db = open_pg_connection();
-    $sql = "SELECT i.codice, i.nome, i.anno, i.propedeuticità, i.descrizione, i.corso_studi
+    $sql = "SELECT i.codice, i.nome, i.anno, i.descrizione, i.corso_studi
     FROM portale_uni.insegnamento i INNER JOIN portale_uni.docente d 
     ON i.docente_responsabile = d.id
     WHERE d.id = $1
@@ -284,7 +304,7 @@ function numeroStudentiInsegnamento($codice_insegnamento, $corso_studi)
     $db = open_pg_connection();
 
     $sql = "SELECT COUNT(*)
-    FROM portale_uni.vista_studente_insegnamento 
+    FROM portale_uni.studente_insegnamento 
     WHERE codice_insegnamento = $1 AND corso_studi = $2";
 
     $params = array(
@@ -400,10 +420,9 @@ function getIscrizioni($id_studente)
 function getEsamiCorso($corso)
 {
     $db = open_pg_connection();
-    $sql = "SELECT e.codice, e.nome, a.id as id_appello, a.data, d.nome as nome_docente, d.cognome as cognome_docente
-    FROM portale_uni.insegnamento i INNER JOIN portale_uni.docente d 
-    ON i.docente_responsabile = d.id inner join portale_uni.esame e
-    on e.insegnamento = i.id
+    $sql = "SELECT e.codice, e.nome, a.id as id_appello, a.data
+    FROM portale_uni.insegnamento i inner join portale_uni.esame e
+    on e.insegnamento = i.codice AND e.corso_studi = i.corso_studi
     inner join portale_uni.appello a
     on a.esame = e.codice
     WHERE i.corso_studi  = $1
@@ -431,13 +450,8 @@ function getEsameByInsegnamento($codice_insegnamento)
 {
     $db = open_pg_connection();
     $sql = "SELECT e.codice
-    FROM portale_uni.esame e INNER JOIN portale_uni.insegnamento i
-    ON e.insegnamento = i.id
-    where i.id = (
-        SELECT i.id
-        from portale_uni.insegnamento i
-        where i.codice = $1
-    );";
+    FROM portale_uni.esame e
+    where e.insegnamento = $1";
     $params = array(
         $codice_insegnamento
     );
@@ -481,10 +495,14 @@ function inserimentoAppello($codice_esame, $data_appello, $corso_studi)
 {
     $db = open_pg_connection();
     $err = "";
-
-    // Recupera l'anno del corso di laurea associato all'esame
-    $sql = "SELECT anno FROM portale_uni.insegnamento WHERE id = (SELECT insegnamento FROM portale_uni.esame WHERE codice = $1)";
-    $params = array($codice_esame);
+    // Recupera l'anno dell'insegnamento associato all'esame
+    $sql = "SELECT anno 
+    FROM portale_uni.insegnamento 
+    WHERE codice = 
+    (SELECT insegnamento FROM portale_uni.esame WHERE codice = $1 and corso_studi =$2) 
+    and corso_studi = 
+    (SELECT corso_studi FROM portale_uni.esame WHERE corso_studi = $2 and codice=$1) ";
+    $params = array($codice_esame, $corso_studi);
     $result = pg_prepare($db, "get_anno_esame", $sql);
     $result = pg_execute($db, "get_anno_esame", $params);
 
@@ -496,8 +514,8 @@ function inserimentoAppello($codice_esame, $data_appello, $corso_studi)
               FROM portale_uni.appello a INNER JOIN portale_uni.esame e 
               ON a.esame = e.codice
               INNER JOIN portale_uni.insegnamento i 
-              ON e.insegnamento = i.id
-              WHERE i.anno = $1 AND a.data = $2 AND corso_studi = $3";
+              ON e.insegnamento = i.codice and e.corso_studi = i.corso_studi
+              WHERE i.anno = $1 AND a.data = $2 AND i.corso_studi = $3";
         $params = array($anno, $data_appello, $corso_studi);
         $result = pg_prepare($db, "check_nuovo_appello", $sql);
         $result = pg_execute($db, "check_nuovo_appello", $params);
@@ -575,32 +593,14 @@ function iscriviEsame($id_studente, $codice_esame, $codice_corso, $id_appello, $
     $success = '';
     $db = open_pg_connection();
 
-    // Verifica se è già presente l'iscrizione
-    $sql = "SELECT COUNT(*)
-    from portale_uni.iscrizione
-    where id_studente = $1 AND esame = $2 AND appello = $3";
-
-    $params = array(
-        $id_studente,
-        $codice_esame,
-        $id_appello
-    );
-
-    $result = pg_prepare($db, "verifica_iscrizione", $sql);
-    $result = pg_execute($db, "verifica_iscrizione", $params);
-    $count = pg_fetch_assoc($result)['count'];
-    if ($count != 0) {
-        $err = "L'iscrizione per l'esame è già stata effettuata";
-        return array($success, $err);
-    }
 
     // Verifica se l'insegnamento è previsto dal corso di studi dello studente
     $sql = "SELECT codice_insegnamento 
-    FROM portale_uni.vista_studente_insegnamento 
+    FROM portale_uni.studente_insegnamento 
     WHERE id = $1 AND codice_insegnamento = 
     (SELECT i.codice 
     from portale_uni.insegnamento i inner join portale_uni.esame e 
-    on i.id = e.insegnamento
+    on i.codice = e.insegnamento AND i.corso_studi = e.corso_studi
     where e.codice = $2)";
 
     $params = array(
@@ -616,25 +616,26 @@ function iscriviEsame($id_studente, $codice_esame, $codice_corso, $id_appello, $
 
     if ($count == 0) {
         $err = "L'insegnamento non è previsto nel tuo corso di studi";
-        return array($success, $err);
+        return $err;
     }
 
     $codice_insegnamento = pg_fetch_assoc($result)['codice_insegnamento'];
 
 
-    // Verifica se l'insegnamento ha insegnamenti propedeutici
-    $insegnamenti = getInsegnamentiCorso($codice_corso);
-    $infoInsegnamento = $insegnamenti[$codice_insegnamento];
-    $propedeuticità = $infoInsegnamento['propedeuticità'];
+    // // Verifica se l'insegnamento ha insegnamenti propedeutici
+    // $insegnamenti = getInsegnamentiCorso($codice_corso);
+    // $infoInsegnamento = $insegnamenti[$codice_insegnamento];
+    // $propedeuticità = $infoInsegnamento['propedeuticità'];
 
-    if (!is_null($propedeuticità)) {
-        $esame_propedeutico = getEsameByInsegnamento($propedeuticità);
+    // if (!is_null($propedeuticità)) {
+    //     $esame_propedeutico = getEsameByInsegnamento($propedeuticità);
 
-        if (!array_key_exists($esame_propedeutico, $carriera)) {
-            $err =  "Non hai superato tutti gli esami propedeutici necessari per iscriverti a questo esame.";
-            return array($success, $err);
-        }
-    }
+    //     if (!array_key_exists($esame_propedeutico, $carriera)) {
+    //         $err =  "Non hai superato tutti gli esami propedeutici necessari per iscriverti a questo esame.";
+    //         return array($success, $err);
+    //     }
+    // }
+
 
     $sql = "INSERT INTO portale_uni.iscrizione (id_studente, esame, appello) VALUES ($1, $2, $3)";
     $params = array(
@@ -642,17 +643,18 @@ function iscriviEsame($id_studente, $codice_esame, $codice_corso, $id_appello, $
         $codice_esame,
         $id_appello
     );
-    $result = pg_prepare($db, "iscrivi_esame", $sql);
-    $result = pg_execute($db, "iscrivi_esame", $params);
-    close_pg_connection($db);
 
-    if ($result) {
-        $success = "Iscrizione effettuata con successo!";
-        return array($success, $err);
-    } else {
-        $err = "Si è verificato un errore durante l'iscrizione.";
-        return array($success, $err);
+    try {
+        $result = pg_prepare($db, "iscrivi_esame", $sql);
+        $result = pg_execute($db, "iscrivi_esame", $params);
+        close_pg_connection($db);
+    } catch (Exception $e) {
+        $err = pg_last_error($db);
+        close_pg_connection($db);
+        return $err;
     }
+
+    return $err;
 }
 
 function removeIscrizione($id_iscrizione)
