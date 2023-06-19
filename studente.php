@@ -72,12 +72,12 @@ if (isset($_POST['rimuovi_esame'])) {
           <h3 class="mb-4">Informazioni personali</h3>
           <div class="d-flex mb-1">
             <?php
-            $info = getInfoStudente($_SESSION['id']);
+            $info = getInfoStudente($_SESSION['user']);
             ?>
-            <label class="fs-6"><strong>Nome: </strong><?php echo ($info['nome_studente']); ?></label>
+            <label class="fs-6"><strong>Nome: </strong><?php echo ($info['nome']); ?></label>
           </div>
           <div class="d-flex mb-1">
-            <label class="fs-6 "><strong>Cognome: </strong><?php echo ($info['cognome_studente']); ?></label>
+            <label class="fs-6 "><strong>Cognome: </strong><?php echo ($info['cognome']); ?></label>
           </div>
           <div class="d-flex mb-1">
             <label class="fs-6 "><strong>Matricola: </strong><?php echo ($info['matricola']); ?></label>
@@ -86,7 +86,7 @@ if (isset($_POST['rimuovi_esame'])) {
             <label class="fs-6 "><strong>Durata corso: </strong><?php echo ($info['durata']); ?></label>
           </div>
           <div class="d-flex">
-            <label class="fs-6  my-1"><strong>Corso: </strong><?php echo ($info['nome']); ?></label>
+            <label class="fs-6  my-1"><strong>Corso: </strong><?php echo ($info['nome_corso']); ?></label>
           </div>
           <div class="d-flex">
             <label class="fs-6  my-1"><strong>Anno di frequenza: </strong><?php echo ($info['anno_frequenza']); ?></label>
@@ -96,7 +96,7 @@ if (isset($_POST['rimuovi_esame'])) {
         <div class="row mx-5 my-4 p-3 shadow rounded" id="insegnamenti">
           <h3 class="mb-4">Insegnamenti del corso di studi</h3>
           <?php
-          $insegnamenti = getInsegnamentiCorso($logged);
+          $insegnamenti = getInsegnamentiCorso($info['codice_corso']);
           if (!empty($insegnamenti)) {
           ?>
             <table class="table">

@@ -203,7 +203,7 @@ function cambiaPassword($email, $vecchia_password, $nuova_password)
 function getInfoStudente($email)
 {
     $db = open_pg_connection();
-    $sql = "SELECT s.id,s.nome, s.cognome, s.matricola, s.email, c.codice, c.nome as nome_corso, c.durata, s.anno_frequenza, s.anno_iscrizione  
+    $sql = "SELECT s.id,s.nome, s.cognome, s.matricola, s.email, c.codice as codice_corso, c.nome as nome_corso, c.durata, s.anno_frequenza, s.anno_iscrizione  
     FROM portale_uni.studente s inner join portale_uni.corso c on c.codice = s.corso_studi 
     WHERE s.email  = $1;";
     $params = array(
@@ -263,6 +263,7 @@ function getInfoSegretario($id_segretario)
 function getInsegnamentiCorso($corso)
 {
     $db = open_pg_connection();
+
     $sql = "SELECT i.codice, i.nome, i.anno, i.descrizione, d.nome as nome_docente, d.cognome as cognome_docente
     FROM portale_uni.insegnamento i INNER JOIN portale_uni.docente d 
     ON i.docente_responsabile = d.id 

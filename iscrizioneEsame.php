@@ -26,7 +26,7 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
     exit();
 }
 
-$info = getInfoStudente($_SESSION['id']);
+$info = getInfoStudente($_SESSION['user']);
 $voti = getCarrieraValida($_SESSION['id']);
 
 if (isset($_POST['codice_esame']) && isset($_POST['id_appello'])) {

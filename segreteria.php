@@ -61,8 +61,6 @@ if (isset($_POST['cerca_utente'])) {
 }
 
 
-print_r($_SESSION);
-
 
 ?>
 
@@ -218,7 +216,7 @@ print_r($_SESSION);
           <?php
           if (isset($_POST['cerca_utente']) || isset($_POST['carriera_valida']) || isset($_POST['carriera_completa'])) {
             if (isset($_SESSION['info_utente'])) {
-          ?> <div class="card p-4">
+          ?> <div class="card p-4 my-3">
                 <h4 class="mb-4">Informazione sull'utente </h4>
                 <div class="d-flex mb-1">
                   <label class="fs-6"><strong>Nome: </strong><?php echo ($_SESSION['info_utente']['nome']); ?></label>
