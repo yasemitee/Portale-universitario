@@ -627,23 +627,6 @@ function iscriviEsame($id_studente, $codice_esame, $codice_corso, $id_appello, $
         return $err;
     }
 
-    $codice_insegnamento = pg_fetch_assoc($result)['codice_insegnamento'];
-
-
-    // // Verifica se l'insegnamento ha insegnamenti propedeutici
-    // $insegnamenti = getInsegnamentiCorso($codice_corso);
-    // $infoInsegnamento = $insegnamenti[$codice_insegnamento];
-    // $propedeuticità = $infoInsegnamento['propedeuticità'];
-
-    // if (!is_null($propedeuticità)) {
-    //     $esame_propedeutico = getEsameByInsegnamento($propedeuticità);
-
-    //     if (!array_key_exists($esame_propedeutico, $carriera)) {
-    //         $err =  "Non hai superato tutti gli esami propedeutici necessari per iscriverti a questo esame.";
-    //         return array($success, $err);
-    //     }
-    // }
-
 
     $sql = "INSERT INTO portale_uni.iscrizione (id_studente, esame, appello) VALUES ($1, $2, $3)";
     $params = array(
@@ -651,16 +634,25 @@ function iscriviEsame($id_studente, $codice_esame, $codice_corso, $id_appello, $
         $codice_esame,
         $id_appello
     );
+    $result = pg_prepare($db, "iscrivi_esame", $sql);
+    $result = pg_execute($db, "iscrivi_esame", $params);
 
-    try {
-        $result = pg_prepare($db, "iscrivi_esame", $sql);
-        $result = pg_execute($db, "iscrivi_esame", $params);
-        close_pg_connection($db);
-    } catch (Exception $e) {
-        $err = pg_last_error($db);
-        close_pg_connection($db);
-        return $err;
+    $err = pg_last_error($db);
+
+    // $error_index = strpos($err, "ERROR:");
+    // $context_index = strpos($err, "CONTEXT:");
+    // if ($error_index !== false) {
+    //     $err = substr($err, $error_index + 6);
+    //     if ($context_index !== false) {
+    //         $err = substr($err, 0, $context_index - 6);
+    //     }
+    // }
+
+    if (preg_match('/ERROR:\s*(.*)\s*CONTEXT:/s', $err, $matches)) {
+        $err = $matches[1];
     }
+
+    close_pg_connection($db);
 
     return $err;
 }

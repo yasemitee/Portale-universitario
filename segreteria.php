@@ -307,6 +307,108 @@ if (isset($_POST['cerca_utente'])) {
           ?>
 
         </div>
+        <!-- INSERIMENTO CORSI -->
+        <div class="row mx-5 my-4 p-3 shadow rounded" id="inserimento_utente">
+          <h2 class="mb-4">Inserimento nuovo corso</h2>
+          <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#inserimento_utente" ?>">
+            <input type="hidden" name="inserimento_utente" value="inserimento_studente">
+            <button type="submit" class="btn btn-light my-1">Inserisci studente</button>
+          </form>
+          <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#inserimento_utente" ?>">
+            <input type="hidden" name="inserimento_utente" value="inserimento_docente">
+            <button type="submit" class="btn btn-light my-1">Inserisci docente</button>
+          </form>
+          <?php
+          if (isset($_POST) && isset($_POST['inserimento_utente'])) {
+            $tipo = $_POST['inserimento_utente'];
+            if ($tipo == 'inserimento_studente') {
+          ?>
+              <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                <input type="hidden" name="inserimento_utente" value="inserimento_studente">
+                <div class="row mt-4">
+                  <div class="col-md-6">
+                    <label for="nome" class="form-label">Nome</label>
+                    <input type="text" class="form-control mb-3" placeholder="Inserisci il nome" name="nome" />
+                  </div>
+                  <div class="col-md-6">
+                    <label for="cognome" class="form-label">Cognome</label>
+                    <input type="text" class="form-control mb-3" placeholder="Inserisci il cognome" name="cognome" />
+                  </div>
+                  <div class="row">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control mb-3" placeholder="name@example.com" name='email' />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control mb-3" placeholder="Inserisci la password" name='password' />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Matricola</label>
+                  <input type="text" class="form-control mb-3" placeholder="Inserisci la matricola" name="matricola" />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Corso di studi</label>
+                  <input type="text" class="form-control mb-3" placeholder="Inserisci il corso di studi" name="corso_studi" />
+                </div>
+                <button type="submit" class="btn custom-btn mt-4">Conferma</button>
+              </form>
+            <?php
+            } elseif ($tipo == 'inserimento_docente') {
+            ?>
+              <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                <input type="hidden" name="inserimento_utente" value="inserimento_docente">
+                <div class="row mt-4">
+                  <div class="col-md-6">
+                    <label for="nome" class="form-label">Nome</label>
+                    <input type="text" class="form-control mb-3" placeholder="Inserisci il nome" name="nome" />
+                  </div>
+                  <div class="col-md-6">
+                    <label for="cognome" class="form-label">Cognome</label>
+                    <input type="text" class="form-control mb-3" placeholder="Inserisci il cognome" name="cognome" />
+                  </div>
+                  <div class="row">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control mb-3" placeholder="name@example.com" name='email' />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control mb-3" placeholder="Inserisci la password" name='password' />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Specializzazione</label>
+                  <input type="text" class="form-control mb-3" placeholder="Inserisci la matricola" name="specializzazione" />
+                </div>
+                <button type="submit" class="btn custom-btn mt-4">Conferma</button>
+              </form>
+          <?php
+            }
+          }
+          ?>
+          <?php
+          if ((isset($registrazione))) {
+            if ($registrazione == true) {
+          ?>
+              <div class="alert alert-success mt-3">
+                <p>Inserimento avvenuto con successo!</p>
+              </div>
+            <?php
+            } else {
+            ?>
+              <div class="alert alert-danger mt-3">
+                <p>Registrazione non riuscita, ti invitiamo a controllare i campi</p>
+              </div>
+          <?php
+            }
+          }
+          ?>
+        </div>
+
       </div>
     </div>
   </div>
