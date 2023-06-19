@@ -200,18 +200,18 @@ function cambiaPassword($email, $vecchia_password, $nuova_password)
 /*
 * Prende le info di uno studente e le resituisce in un array
 */
-function getInfoStudente($id_studente)
+function getInfoStudente($email)
 {
     $db = open_pg_connection();
-    $sql = "SELECT s.nome as nome_studente, s.cognome as cognome_studente, s.matricola, c.codice as codice_corso, c.nome, c.durata, s.anno_frequenza  
+    $sql = "SELECT s.id,s.nome, s.cognome, s.matricola, s.email, c.codice, c.nome as nome_corso, c.durata, s.anno_frequenza, s.anno_iscrizione  
     FROM portale_uni.studente s inner join portale_uni.corso c on c.codice = s.corso_studi 
-    WHERE s.id  = $1;";
+    WHERE s.email  = $1;";
     $params = array(
-        $id_studente
+        $email
     );
 
-    $result = pg_prepare($db, "get_info", $sql);
-    $result = pg_execute($db, "get_info", $params);
+    $result = pg_prepare($db, "get_info_studente", $sql);
+    $result = pg_execute($db, "get_info_studente", $params);
 
     if ($row = pg_fetch_assoc($result)) {
         return $row;
@@ -220,18 +220,18 @@ function getInfoStudente($id_studente)
     close_pg_connection($db);
 }
 
-function getInfoDocente($id_docente)
+function getInfoDocente($email)
 {
     $db = open_pg_connection();
-    $sql = "SELECT d.nome as nome_docente, d.cognome as cognome_docente, d.specializzazione
+    $sql = "SELECT d.nome, d.cognome, d.email, d.specializzazione
     FROM portale_uni.docente d
-    WHERE d.id  = $1;";
+    WHERE d.email  = $1;";
     $params = array(
-        $id_docente
+        $email
     );
 
-    $result = pg_prepare($db, "get_info", $sql);
-    $result = pg_execute($db, "get_info", $params);
+    $result = pg_prepare($db, "get_info_docente", $sql);
+    $result = pg_execute($db, "get_info_docente", $params);
 
     if ($row = pg_fetch_assoc($result)) {
         return $row;
@@ -250,8 +250,8 @@ function getInfoSegretario($id_segretario)
         $id_segretario
     );
 
-    $result = pg_prepare($db, "get_info", $sql);
-    $result = pg_execute($db, "get_info", $params);
+    $result = pg_prepare($db, "get_info_segretario", $sql);
+    $result = pg_execute($db, "get_info_segretario", $params);
 
     if ($row = pg_fetch_assoc($result)) {
         return $row;

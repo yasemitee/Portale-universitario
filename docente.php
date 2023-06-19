@@ -61,7 +61,7 @@ if (isset($_POST['rimuovi_appello'])) {
         <div class="row mx-5 my-4 p-3 shadow rounded" id="informazioni">
           <h2 class="mb-4">Informazioni personali</h2>
           <?php
-          $info = getInfoDocente($_SESSION['id']);
+          $info = getInfoDocente($logged);
           ?>
           <div class="d-flex mb-1">
             <label class="fs-6"><strong>Nome: </strong><?php echo ($info['nome_docente']); ?></label>

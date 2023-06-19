@@ -96,7 +96,7 @@ if (isset($_POST['rimuovi_esame'])) {
         <div class="row mx-5 my-4 p-3 shadow rounded" id="insegnamenti">
           <h3 class="mb-4">Insegnamenti del corso di studi</h3>
           <?php
-          $insegnamenti = getInsegnamentiCorso($info['codice_corso']);
+          $insegnamenti = getInsegnamentiCorso($logged);
           if (!empty($insegnamenti)) {
           ?>
             <table class="table">

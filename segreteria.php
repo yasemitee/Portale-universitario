@@ -48,6 +48,21 @@ if (isset($_POST['nome'], $_POST['cognome'], $_POST['email'], $_POST['password']
   }
 }
 
+if (isset($_POST['cerca_utente'])) {
+  $email = $_POST['cerca_utente'];
+  $info_utente = getInfoStudente($email);
+
+  if (!isset($info_utente)) {
+    $info_utente = getInfoDocente($email);
+  }
+  $_SESSION['info_utente'] = $info_utente;
+} elseif (!isset($_POST['carriera_valida']) && !isset($_POST['carriera_completa'])) {
+  unset($_SESSION['info_utente']);
+}
+
+
+print_r($_SESSION);
+
 
 ?>
 
@@ -194,11 +209,105 @@ if (isset($_POST['nome'], $_POST['cognome'], $_POST['email'], $_POST['password']
         <div class="row mx-5 my-4 p-3 shadow rounded" id="informazioni">
           <h2 class="mb-4">Gestione utenti</h2>
           <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-            <button type="submit" class="btn custom-btn my-1">Gestione studenti</button>
+            <div class="col-md-6">
+              <label class="form-label">Email dell'utente</label>
+              <input type="email" class="form-control mb-3" placeholder="name@example.com" name='cerca_utente' />
+            </div>
+            <button type="submit" class="btn custom-btn my-1">Cerca</button>
           </form>
-          <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-            <button type="submit" class="btn custom-btn my-1">Gestione docenti</button>
-          </form>
+          <?php
+          if (isset($_POST['cerca_utente']) || isset($_POST['carriera_valida']) || isset($_POST['carriera_completa'])) {
+            if (isset($_SESSION['info_utente'])) {
+          ?> <div class="card p-4">
+                <h4 class="mb-4">Informazione sull'utente </h4>
+                <div class="d-flex mb-1">
+                  <label class="fs-6"><strong>Nome: </strong><?php echo ($_SESSION['info_utente']['nome']); ?></label>
+                </div>
+                <div class="d-flex mb-1">
+                  <label class="fs-6 "><strong>Cognome: </strong><?php echo ($_SESSION['info_utente']['cognome']); ?></label>
+                </div>
+                <div class="d-flex mb-1">
+                  <label class="fs-6 "><strong>E-mail: </strong><?php echo ($_SESSION['info_utente']['email']); ?></label>
+                </div>
+                <?php
+                if (array_key_exists('matricola', $_SESSION['info_utente'])) {
+                ?>
+                  <div class="d-flex mb-1">
+                    <label class="fs-6 "><strong>Matricola: </strong><?php echo ($_SESSION['info_utente']['matricola']); ?></label>
+                  </div>
+                  <div class="d-flex mb-1">
+                    <label class="fs-6 "><strong>Corso di studi: </strong><?php echo ($_SESSION['info_utente']['nome_corso']); ?></label>
+                  </div>
+                  <div class="d-flex mb-1">
+                    <label class="fs-6 "><strong>Anno di frequenza: </strong><?php echo ($_SESSION['info_utente']['anno_frequenza']); ?></label>
+                  </div>
+                  <div class="d-flex mb-1">
+                    <label class="fs-6 "><strong>Anno di iscrizione: </strong><?php echo ($_SESSION['info_utente']['anno_iscrizione']); ?></label>
+                  </div>
+                  <div class="d-flex my-2">
+                    <form class="" method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#inserimento_utente" ?>">
+                      <input type="hidden" name="carriera_valida" value="carriera_valida">
+                      <button type="submit" class="btn custom-btn">Carriera valida</button>
+                    </form>
+                    <form class="mx-3" method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#inserimento_utente" ?>">
+                      <input type="hidden" name="carriera_completa" value="carriera_completa">
+                      <button type="submit" class="btn custom-btn">Carriera completa</button>
+                    </form>
+                  </div>
+                  <?php
+                  if (isset($_POST['carriera_valida'])) {
+                    $voti = getCarrieraValida($_SESSION['info_utente']['id']);
+                  } elseif (isset($_POST['carriera_completa'])) {
+                    $voti = getCarrieraCompleta($_SESSION['info_utente']['id']);
+                  }
+                  if (isset($voti)) {
+                  ?>
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th scope="col">C.Esame</th>
+                          <th scope="col">Esame</th>
+                          <th scope="col">Valutazione</th>
+                          <th class="d-none d-sm-table-cell" scope="col">Data verbalizzazione</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <?php foreach ($voti as $voto) { ?>
+                          <tr>
+                            <th scope="row"><?php echo $voto['codice']; ?></th>
+                            <td><?php echo $voto['nome']; ?></td>
+                            <td><?php echo $voto['voto']; ?></td>
+                            <td class="d-none d-sm-table-cell"><?php echo $voto['data_verbalizzazione']; ?></td>
+                          </tr>
+                        <?php } ?>
+                      </tbody>
+                    </table>
+                  <?php
+                  } elseif (isset($_POST['carriera_valida']) || isset($_POST['carriera_completa'])) { ?>
+                    <div class="alert alert-danger my-3">Nessun esame disponibile.</div>
+                  <?php } ?>
+                <?php
+                } else {
+                ?>
+                  <div class="d-flex mb-1">
+                    <label class="fs-6 "><strong>Specializzazione: </strong><?php echo ($info_utente['specializzazione']); ?></label>
+                  </div>
+                <?php
+                }
+                ?>
+                <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#inserimento_utente" ?>">
+                  <input type="hidden" name="inserimento_utente" value="inserimento_docente">
+                  <button type="submit" class="btn btn-danger my-2">Elimina utente</button>
+                </form>
+              </div>
+            <?php
+            } else {
+            ?><div class="alert alert-danger">Utente non trovato</div>
+          <?php
+            }
+          }
+          ?>
+
         </div>
       </div>
     </div>
