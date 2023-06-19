@@ -26,7 +26,7 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
   exit();
 }
 
-
+//INSERIMENTO UTENTE
 if (isset($_POST['nome'], $_POST['cognome'], $_POST['email'], $_POST['password'], $_POST['inserimento_utente'])) {
   $nome = $_POST['nome'];
   $cognome = $_POST['cognome'];
@@ -47,7 +47,7 @@ if (isset($_POST['nome'], $_POST['cognome'], $_POST['email'], $_POST['password']
     }
   }
 }
-
+//RICERCA UTENTE
 if (isset($_POST['cerca_utente'])) {
   $email = $_POST['cerca_utente'];
   $info_utente = getInfoStudente($email);
@@ -60,6 +60,28 @@ if (isset($_POST['cerca_utente'])) {
   unset($_SESSION['info_utente']);
 }
 
+//INSERIMENTO CORSO/INSEGNAMENTO
+if (isset($_POST['codice'], $_POST['nome'], $_POST['descrizione'], $_POST['inserimento'])) {
+  $codice = $_POST['codice'];
+  $nome = $_POST['nome'];
+  $descrizione = $_POST['descrizione'];
+  $tipo = $_POST['inserimento'];
+  if ($tipo == "inserimento_corso") {
+    if (isset($_POST['facoltà'], $_POST['durata'])) {
+      $facoltà = $_POST['facoltà'];
+      $durata = $_POST['durata'];
+      $inserimento = inserisciCorso($codice, $nome, $descrizione, $facoltà, $durata);
+    }
+  } elseif ($tipo == 'inserimento_insegnamento') {
+    if (isset($_POST['anno'], $_POST['corso_studi'], $_POST['docente_responsabile'])) {
+      $anno = $_POST['anno'];
+      $corso_studi = $_POST['corso_studi'];
+      $docente_responsabile = $_POST['docente_responsabile'];
+
+      $inserimento = inserisciInsegnamento($codice, $nome, $corso_studi, $descrizione, $anno, $docente_responsabile);
+    }
+  }
+}
 
 
 ?>
@@ -204,7 +226,7 @@ if (isset($_POST['cerca_utente'])) {
           ?>
         </div>
         <!-- Gestione utenti -->
-        <div class="row mx-5 my-4 p-3 shadow rounded" id="informazioni">
+        <div class="row mx-5 my-4 p-3 shadow rounded" id="gestione_utente">
           <h2 class="mb-4">Gestione utenti</h2>
           <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
             <div class="col-md-6">
@@ -308,82 +330,83 @@ if (isset($_POST['cerca_utente'])) {
 
         </div>
         <!-- INSERIMENTO CORSI -->
-        <div class="row mx-5 my-4 p-3 shadow rounded" id="inserimento_utente">
+        <div class="row mx-5 my-4 p-3 shadow rounded" id="inserimento_corso">
           <h2 class="mb-4">Inserimento nuovo corso</h2>
-          <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#inserimento_utente" ?>">
-            <input type="hidden" name="inserimento_utente" value="inserimento_studente">
-            <button type="submit" class="btn btn-light my-1">Inserisci studente</button>
+          <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#inserimento_corso" ?>">
+            <input type="hidden" name="inserimento" value="inserimento_corso">
+            <button type="submit" class="btn btn-light my-1">Inserisci corso di studi</button>
           </form>
-          <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#inserimento_utente" ?>">
-            <input type="hidden" name="inserimento_utente" value="inserimento_docente">
-            <button type="submit" class="btn btn-light my-1">Inserisci docente</button>
+          <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#inserimento_corso" ?>">
+            <input type="hidden" name="inserimento" value="inserimento_insegnamento">
+            <button type="submit" class="btn btn-light my-1">Inserisci insegnamento</button>
           </form>
           <?php
-          if (isset($_POST) && isset($_POST['inserimento_utente'])) {
-            $tipo = $_POST['inserimento_utente'];
-            if ($tipo == 'inserimento_studente') {
+          if (isset($_POST) && isset($_POST['inserimento'])) {
+            $tipo = $_POST['inserimento'];
+            if ($tipo == 'inserimento_corso') {
           ?>
               <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
-                <input type="hidden" name="inserimento_utente" value="inserimento_studente">
+                <input type="hidden" name="inserimento" value="inserimento_corso">
                 <div class="row mt-4">
+                  <div class="col-md-6">
+                    <label for="cognome" class="form-label">Codice</label>
+                    <input type="text" class="form-control mb-3" placeholder="Inserisci il codice" name="codice" />
+                  </div>
                   <div class="col-md-6">
                     <label for="nome" class="form-label">Nome</label>
                     <input type="text" class="form-control mb-3" placeholder="Inserisci il nome" name="nome" />
                   </div>
-                  <div class="col-md-6">
-                    <label for="cognome" class="form-label">Cognome</label>
-                    <input type="text" class="form-control mb-3" placeholder="Inserisci il cognome" name="cognome" />
-                  </div>
                   <div class="row">
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-control mb-3" placeholder="name@example.com" name='email' />
+                    <label class="form-label">Facoltà</label>
+                    <input type="text" class="form-control mb-3" placeholder="Inserisci la facoltà" name='facoltà' />
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="form-control mb-3" placeholder="Inserisci la password" name='password' />
+                    <label class="form-label">Durata</label>
+                    <input type="number" class="form-control mb-3" placeholder="Inserisci la durata del corso" name='durata' />
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label">Matricola</label>
-                  <input type="text" class="form-control mb-3" placeholder="Inserisci la matricola" name="matricola" />
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label">Corso di studi</label>
-                  <input type="text" class="form-control mb-3" placeholder="Inserisci il corso di studi" name="corso_studi" />
+                  <label class="form-label">Descrizione</label>
+                  <input type="text" class="form-control mb-3" placeholder="Una breve descrizione del corso" name="descrizione" />
                 </div>
                 <button type="submit" class="btn custom-btn mt-4">Conferma</button>
               </form>
             <?php
-            } elseif ($tipo == 'inserimento_docente') {
+            } elseif ($tipo == 'inserimento_insegnamento') {
             ?>
               <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
-                <input type="hidden" name="inserimento_utente" value="inserimento_docente">
+                <input type="hidden" name="inserimento" value="inserimento_insegnamento">
                 <div class="row mt-4">
                   <div class="col-md-6">
-                    <label for="nome" class="form-label">Nome</label>
+                    <label class="form-label">Codice</label>
+                    <input type="text" class="form-control mb-3" placeholder="Inserisci il cognome" name="codice" />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Corso di studi</label>
+                    <input type="text" class="form-control mb-3" placeholder="Inserisci il corso di studi" name="corso_studi" />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Nome</label>
                     <input type="text" class="form-control mb-3" placeholder="Inserisci il nome" name="nome" />
                   </div>
                   <div class="col-md-6">
-                    <label for="cognome" class="form-label">Cognome</label>
-                    <input type="text" class="form-control mb-3" placeholder="Inserisci il cognome" name="cognome" />
-                  </div>
-                  <div class="row">
+                    <label class="form-label">Anno di insegnamento</label>
+                    <input type="number" class="form-control mb-3" placeholder="Inserisci l'anno" name='anno' />
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-control mb-3" placeholder="name@example.com" name='email' />
+                    <label class="form-label">Docente responsabile</label>
+                    <input type="text" class="form-control mb-3" placeholder="Inserisci l'id/codice del docente" name='docente_responsabile' />
                   </div>
+
                   <div class="col-md-6">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="form-control mb-3" placeholder="Inserisci la password" name='password' />
+                    <label class="form-label">Descrizione</label>
+                    <textarea type="text" class="form-control mb-3" name='descrizione'>
+                    </textarea>
                   </div>
                 </div>
-                <div class="col-md-6">
-                  <label class="form-label">Specializzazione</label>
-                  <input type="text" class="form-control mb-3" placeholder="Inserisci la matricola" name="specializzazione" />
-                </div>
+
                 <button type="submit" class="btn custom-btn mt-4">Conferma</button>
               </form>
           <?php
@@ -391,8 +414,8 @@ if (isset($_POST['cerca_utente'])) {
           }
           ?>
           <?php
-          if ((isset($registrazione))) {
-            if ($registrazione == true) {
+          if ((isset($inserimento))) {
+            if ($inserimento == true) {
           ?>
               <div class="alert alert-success mt-3">
                 <p>Inserimento avvenuto con successo!</p>
@@ -401,7 +424,7 @@ if (isset($_POST['cerca_utente'])) {
             } else {
             ?>
               <div class="alert alert-danger mt-3">
-                <p>Registrazione non riuscita, ti invitiamo a controllare i campi</p>
+                <p>Inserimento non riuscito, ti invitiamo a controllare i campi</p>
               </div>
           <?php
             }

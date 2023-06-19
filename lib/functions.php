@@ -159,6 +159,103 @@ function registraDocente($nome, $cognome, $email, $password, $specializzazione)
     return $result !== false;
 }
 
+function inserisciCorso($codice, $nome, $descrizione, $facoltà, $durata)
+{
+    if (empty($codice) || empty($nome) || empty($descrizione) || empty($facoltà) || empty($durata)) {
+        return false;
+    }
+
+    $db = open_pg_connection();
+
+    $sql = "SELECT COUNT(*) FROM portale_uni.corso WHERE codice = $1;";
+
+    $params = array(
+        $codice
+    );
+
+    $result = pg_prepare($db, "controllo_esistenza_corso", $sql);
+    $result = pg_execute($db, "controllo_esistenza_corso", $params);
+
+    $count = pg_fetch_result($result, 0, 0);
+    if ($count > 0) {
+        close_pg_connection($db);
+        return false;
+    }
+
+    $sql = "INSERT INTO portale_uni.corso (codice, nome, facoltà, durata, descrizione)
+            VALUES ($1, $2, $3, $4, $5)";
+    $params = array(
+        $codice,
+        $nome,
+        $facoltà,
+        $durata,
+        $descrizione
+    );
+
+    $result = pg_prepare($db, "inserisci_corso", $sql);
+    $result = pg_execute($db, "inserisci_corso", $params);
+
+    close_pg_connection($db);
+    return $result !== false;
+}
+
+function inserisciInsegnamento($codice, $nome, $corso_studi, $descrizione, $anno, $docente_responsabile)
+{
+    if (empty($codice) || empty($nome) || empty($descrizione) || empty($corso_studi) || empty($anno) || empty($docente_responsabile)) {
+        return false;
+    }
+
+
+    $db = open_pg_connection();
+
+    $sql = "SELECT COUNT(*) FROM portale_uni.insegnamento WHERE codice = $1;";
+
+    $params = array(
+        $codice
+    );
+
+    $result = pg_prepare($db, "controllo_esistenza_insegnamento", $sql);
+    $result = pg_execute($db, "controllo_esistenza_insegnamento", $params);
+
+    $count = pg_fetch_result($result, 0, 0);
+    if ($count > 0) {
+        close_pg_connection($db);
+        return false;
+    }
+
+
+    $sql = "SELECT COUNT(*) FROM portale_uni.corso WHERE codice = $1;";
+
+    $params = array(
+        $corso_studi
+    );
+
+    $result = pg_prepare($db, "controllo_esistenza_corso", $sql);
+    $result = pg_execute($db, "controllo_esistenza_corso", $params);
+
+    $count = pg_fetch_result($result, 0, 0);
+    if ($count == 0) {
+        close_pg_connection($db);
+        return false;
+    }
+
+    $sql = "INSERT INTO portale_uni.insegnamento(codice, nome, descrizione, anno, docente_responsabile, corso_studi)
+            VALUES ($1, $2, $3, $4, $5, $6)";
+    $params = array(
+        $codice,
+        $nome,
+        $descrizione,
+        $anno,
+        $docente_responsabile,
+        $corso_studi
+    );
+
+    $result = pg_prepare($db, "inserisci_insegnamento", $sql);
+    $result = pg_execute($db, "inserisci_insegnamento", $params);
+
+    close_pg_connection($db);
+    return $result !== false;
+}
 
 
 /*
