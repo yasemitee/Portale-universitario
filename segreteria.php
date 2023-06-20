@@ -147,33 +147,32 @@ if (isset($_POST['elimina_insegnamento'])) {
       <div id="content" class="col py-3 offset-1 offset-md-3 offset-lg-2 offset-sm-3">
 
         <!-- Informazioni generali -->
-        <div class="row mx-5 my-4 p-3 shadow rounded" id="informazioni">
-          <h2 class="mb-4">Informazioni personali</h2>
+        <div class="row mx-5 my-4 p-3 shadow rounded" id="informazioni_personali">
+          <h6 class="mb-4 text-uppercase">Informazioni personali</h6>
           <?php
-          $info = getInfoSegretario($_SESSION['id']);
+          $info = getInfoSegretario($_SESSION['user']);
           ?>
           <div class="d-flex mb-1">
-            <label class="fs-6"><strong>Nome: </strong><?php echo ($info['nome']); ?></label>
-          </div>
-          <div class="d-flex mb-1">
-            <label class="fs-6 "><strong>Cognome: </strong><?php echo ($info['cognome']); ?></label>
+            <div class="mb-1">
+              <label class="fs-2"><strong><?php echo ($info['nome'] . ' ' . $info['cognome']); ?></strong></label>
+            </div>
           </div>
           <div class="d-flex mb-1">
             <label class="fs-6 "><strong>E-mail: </strong><?php echo ($info['email']); ?></label>
           </div>
         </div>
         <div class="row mx-5 my-4 p-3 shadow rounded" id="sezione_utenti">
-          <h2 class="my-5">Sezione utenti</h2>
+          <h3 class="mb-4 text-uppercase">Sezione utenti</h3>
           <!-- Iscrizione utenti -->
           <div class="row " id="inserimento_utente">
-            <h3 class="mb-4">Inserimento nuovo utente</h3>
+            <h6 class="mb-4 text-uppercase">Inserimento nuovo utente</h6>
             <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#inserimento_utente" ?>">
               <input type="hidden" name="inserimento_utente" value="inserimento_studente">
-              <button type="submit" class="btn btn-light my-1">Inserisci studente</button>
+              <button type="submit" class="btn btn-light my-1">> Inserisci studente</button>
             </form>
             <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#inserimento_utente" ?>">
               <input type="hidden" name="inserimento_utente" value="inserimento_docente">
-              <button type="submit" class="btn btn-light my-1">Inserisci docente</button>
+              <button type="submit" class="btn btn-light my-1">> Inserisci docente</button>
             </form>
             <?php
             if (isset($_POST) && isset($_POST['inserimento_utente'])) {
@@ -267,8 +266,8 @@ if (isset($_POST['elimina_insegnamento'])) {
           </div>
           <!-- Gestione utenti -->
           <div class="row my-5" id="gestione_utente">
-            <h3 class="mb-4">Gestione utenti</h3>
-            <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+            <h6 class="mb-4 text-uppercase">Ricerca utente</h6>
+            <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#gestione_utente"; ?>">
               <div class="col-md-6">
                 <label class="form-label">Email dell'utente</label>
                 <input type="email" class="form-control mb-3" placeholder="name@example.com" name='cerca_utente' />
@@ -280,7 +279,7 @@ if (isset($_POST['elimina_insegnamento'])) {
               if (isset($_SESSION['info_utente'])) {
                 $id_utente = $_SESSION['info_utente']['id'];
             ?> <div class="card p-4 my-3">
-                  <h4 class="mb-4">Informazione sull'utente </h4>
+                  <h5 class="mb-4 text-uppercase">Informazione sull'utente </h5>
                   <div class="d-flex mb-1">
                     <label class="fs-6"><strong>Nome: </strong><?php echo ($_SESSION['info_utente']['nome']); ?></label>
                   </div>
@@ -396,17 +395,17 @@ if (isset($_POST['elimina_insegnamento'])) {
           </div>
         </div>
         <div class="row mx-5 my-4 p-3 shadow rounded" id="sezione_corsi">
-          <h2 class="my-5">Sezione Corsi-Insegnamenti</h2>
+          <h3 class="mb-4 text-uppercase">Sezione Corsi-Insegnamenti</h3>
           <!-- INSERIMENTO CORSI/INSEGNAMENTI -->
           <div class="row" id="inserimento_corso">
-            <h3 class="mb-4">Inserimento nuovo corso</h3>
+            <h6 class="mb-4 text-uppercase">Inserimento nuovo corso</h6>
             <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#inserimento_corso" ?>">
               <input type="hidden" name="inserimento" value="inserimento_corso">
-              <button type="submit" class="btn btn-light my-1">Inserisci corso di studi</button>
+              <button type="submit" class="btn btn-light my-1">> Inserisci corso di studi</button>
             </form>
             <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#inserimento_corso" ?>">
               <input type="hidden" name="inserimento" value="inserimento_insegnamento">
-              <button type="submit" class="btn btn-light my-1">Inserisci insegnamento</button>
+              <button type="submit" class="btn btn-light my-1">> Inserisci insegnamento</button>
             </form>
             <?php
             if (isset($_POST) && isset($_POST['inserimento'])) {
@@ -505,7 +504,7 @@ if (isset($_POST['elimina_insegnamento'])) {
           </div>
           <!-- Gestione corsi -->
           <div class="row my-5" id="gestione_corsi">
-            <h3 class="mb-4">Gestione corsi</h3>
+            <h6 class="mb-4 text-uppercase">Ricerca corso</h6>
             <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . '#gestione_corsi'; ?>">
               <div class="col-md-6">
                 <label class="form-label">Codice del corso</label>
@@ -516,7 +515,7 @@ if (isset($_POST['elimina_insegnamento'])) {
             <?php
             if (isset($_POST['cerca_corso'], $info_corso)) {
             ?> <div class="card p-4 my-3">
-                <h4 class="mb-4">Informazioni sul corso </h4>
+                <h5 class="mb-4 text-uppercase">Informazioni sul corso </h5>
                 <div class="d-flex mb-1">
                   <label class="fs-6"><strong>Nome: </strong><?php echo $info_corso['nome']; ?></label>
                 </div>
@@ -585,7 +584,7 @@ if (isset($_POST['elimina_insegnamento'])) {
           </div>
           <!-- Gestione Insegnamenti -->
           <div class="row" id="gestione_insegnamenti">
-            <h3 class="mb-4">Gestione insegnamenti</h3>
+            <h6 class="mb-4 text-uppercase">Gestione insegnamenti</h6>
             <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . '#gestione_insegnamenti'; ?>">
               <div class="col-md-6">
                 <label class="form-label">Codice dell'insegnamento </label>
@@ -596,7 +595,7 @@ if (isset($_POST['elimina_insegnamento'])) {
             <?php
             if (isset($_POST['cerca_insegnamento'], $info_insegnamento)) {
             ?> <div class="card p-4 my-3">
-                <h4 class="mb-4">Informazioni sull'insegnamento </h4>
+                <h5 class="mb-4 text-uppercase">Informazioni sull'insegnamento </h5>
                 <div class="d-flex mb-1">
                   <label class="fs-6"><strong>Nome: </strong><?php echo $info_insegnamento['nome']; ?></label>
                 </div>

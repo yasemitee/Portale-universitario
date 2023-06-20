@@ -1,12 +1,11 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 
 html, body{
     width: 100%;
     background-repeat: no-repeat;
     background-size: cover;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 .container{
@@ -18,23 +17,23 @@ html, body{
 }
 
 .btn{
-    background-color: #4B5EF4;
+    background-color: #0466C8;
     color: #fff;
 }
 
 .btn:hover{
-    background-color: #4b5ff4d8;
+    background-color: #0466C8;
     color: #fff;
 }
 
 .nav-link{
-    color: #4B5EF4;
+    color: #0466C8;
 }
 
 .form-control:focus{
-    border-color: #4B5EF4;
+    border-color: #0466C8;
 }
 
 .form-select:focus{
-    border-color: #4B5EF4;
+    border-color: #0466C8;
 }

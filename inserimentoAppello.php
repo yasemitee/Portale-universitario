@@ -78,9 +78,9 @@ if (isset($_POST) && isset($_POST['data_appello'])) {
             <!-- Contenuto di destra -->
             <div id="content" class="col py-3  offset-1 offset-md-3 offset-lg-2 offset-sm-3">
                 <div class="row mx-5 my-4 p-3 shadow rounded">
-                    <h3 class="mb-4">Inserisci un nuovo appello per <strong><?php echo $codice_esame ?></strong></h3>
+                    <h3 class="mb-4 text-uppercase">Inserisci un nuovo appello per <strong><?php echo $codice_esame ?></strong></h3>
                     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
-                        <label for="date" class="col-form-label">Date appello</label>
+                        <label for="date" class="col-form-label">Data appello</label>
                         <div class="col-md-6">
                             <div class="input-group date" id="datepicker">
                                 <input type="text" class="form-control" name="data_appello">

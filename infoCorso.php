@@ -54,39 +54,42 @@ if (isset($_POST) && isset($_POST['corso'])) {
             include_once('lib/sidebar-studente.php');
             ?>
             <!-- Contenuto di destra -->
-            <div id="content" class="col py-3 offset-1 offset-md-2 offset-sm-3">
+            <div id="content" class="col py-3 offset-1 offset-md-3 offset-lg-2 offset-sm-3">
 
                 <?php
                 if (!empty($insegnamenti)) {
                 ?>
-                    <h1 class="mb-6 mx-5"><?php echo ('Corso di ' . $corso['nome']); ?></h1>
+                    <h3 class="mb-4 text-uppercase mx-5"><?php echo ('Corso di ' . $corso['nome']); ?></h3>
                     <div class="row mx-5 my-5 p-3 shadow rounded">
-                        <h3 class="mb-4">Informazioni generali sul corso</h3>
+                        <h5 class="mb-4 text-uppercase">Informazioni generali sul corso</h5>
                         <label class="fs-6 my-2"><strong>Codice del corso: </strong><?php echo ($corso['codice']); ?></label>
                         <label class="fs-6 my-2"><strong>Durata: </strong><?php echo ($corso['durata']); ?></label>
                         <label class="fs-6 my-2"><strong>Descrizione: </strong><?php echo ($corso['descrizione']); ?></label>
                     </div>
-                    <div class="row mx-5 my-5">
-                        <h3 class="mb-4">Gli insegnamenti del corso</h3>
-                        <?php foreach ($insegnamenti as $insegnamento) {
-                        ?>
-                            <div class="card mb-5 shadow" style="max-width: 540px; border-style: none;">
-                                <div class="row g-0">
-                                    <div class="col-md-5  py-5 px-3">
+                    <div class="row mx-5 my-5 shadow rounded">
+                        <h5 class="mb-4 text-uppercase my-3">Gli insegnamenti del corso</h5>
+                        <div class="row row-cols-1 row-cols-md-2">
+
+
+                            <?php foreach ($insegnamenti as $insegnamento) {
+                            ?>
+                                <div class="card mb-5 p-3 col">
+                                    <div class="row g-0">
                                         <h5 class="card-title mb-3"><?php echo $insegnamento['nome'] ?></h5>
                                         <h6 class="card-text"><strong>Docente:</strong><br><?php echo $insegnamento['nome_docente'] . " " . $insegnamento['cognome_docente'] ?></h6>
                                         <h6 class="card-text"><strong>Anno: </strong><?php echo $insegnamento['anno'] ?></h6>
-                                    </div>
-                                    <div class="col-md-7 mt-md-0 mt-3 py-5 px-3">
+
+
                                         <h5 class="card-title">Descrizione:</h5>
                                         <h6 class="card-text"><?php echo $insegnamento['descrizione'] ?> </h6>
+
                                     </div>
                                 </div>
-                            </div>
+                            <?php } ?>
+                        <?php } else { ?>
+                            <div class="alert alert-danger mt-3">Nessun info disponibile sul corso</div>
                         <?php } ?>
-                    <?php } else { ?>
-                        <div class="alert alert-danger mt-3">Nessun info disponibile sul corso</div>
-                    <?php } ?>
+                        </div>
                     </div>
             </div>
         </div>

@@ -26,15 +26,11 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
   exit();
 }
 
-if (isset($_POST) && isset($_POST['tipo_carriera'])) {
-  $carriera = $_POST['tipo_carriera'];
-  if ($carriera == 'carriera_valida') {
-    $_SESSION['voti'] = getCarrieraValida($_SESSION['id']);
-  } elseif ($carriera == 'carriera_completa') {
-    $_SESSION['voti'] = getCarrieraCompleta($_SESSION['id']);
-  }
-  header("Location: " . $_SERVER['PHP_SELF'] . "#carriera");
+if (isset($logged)) {
+  $_SESSION['carriera_valida'] = getCarrieraValida($_SESSION['id']);
+  $_SESSION['carriera_completa'] = getCarrieraCompleta($_SESSION['id']);
 }
+
 
 if (isset($_POST['rimuovi_esame'])) {
   $id_iscrizione = $_POST['rimuovi_esame'];
@@ -66,35 +62,35 @@ if (isset($_POST['rimuovi_esame'])) {
       include_once('lib/sidebar-studente.php');
       ?>
       <!-- Contenuto di destra -->
-      <div id="content" class="col py-3  offset-1 offset-md-2 offset-sm-3">
+      <div id="content" class="col py-3 offset-1 offset-md-3 offset-lg-2 offset-sm-3">
         <!-- Informazioni generali -->
-        <div class="row mx-5 my-4 p-3 shadow rounded" id="informazioni">
-          <h3 class="mb-4">Informazioni personali</h3>
-          <div class="d-flex mb-1">
-            <?php
-            $info = getInfoStudente($_SESSION['user']);
-            ?>
-            <label class="fs-6"><strong>Nome: </strong><?php echo ($info['nome']); ?></label>
-          </div>
-          <div class="d-flex mb-1">
-            <label class="fs-6 "><strong>Cognome: </strong><?php echo ($info['cognome']); ?></label>
-          </div>
-          <div class="d-flex mb-1">
-            <label class="fs-6 "><strong>Matricola: </strong><?php echo ($info['matricola']); ?></label>
-          </div>
-          <div class="d-flex my-1">
-            <label class="fs-6 "><strong>Durata corso: </strong><?php echo ($info['durata']); ?></label>
+        <div class="row mx-5 my-4 p-3 shadow rounded" id="informazioni_personali">
+          <!-- <img src="img/wave-haikei.svg" alt="wave"> -->
+          <h6 class="mb-4 text-uppercase">Informazioni personali</h6>
+          <?php
+          $info = getInfoStudente($_SESSION['user']);
+          ?>
+          <div class="d-flex flex-column">
+            <div class="mb-1">
+              <label class="fs-2"><strong><?php echo ($info['nome'] . ' ' . $info['cognome']); ?></strong></label>
+            </div>
+            <div class="mb-1">
+              <label class="fs-6 matricola"><strong>#<?php echo ($info['matricola']); ?></strong></label>
+            </div>
           </div>
           <div class="d-flex">
-            <label class="fs-6  my-1"><strong>Corso: </strong><?php echo ($info['nome_corso']); ?></label>
+            <label class="fs-6  mt-4 my-1"><strong>Corso: </strong><?php echo ($info['nome_corso']); ?></label>
           </div>
           <div class="d-flex">
             <label class="fs-6  my-1"><strong>Anno di frequenza: </strong><?php echo ($info['anno_frequenza']); ?></label>
           </div>
+          <div class="d-flex my-1">
+            <label class="fs-6 "><strong>Durata corso: </strong><?php echo ($info['durata']); ?></label>
+          </div>
         </div>
         <!-- Insegnamenti del corso -->
         <div class="row mx-5 my-4 p-3 shadow rounded" id="insegnamenti">
-          <h3 class="mb-4">Insegnamenti del corso di studi</h3>
+          <h6 class="mb-4 text-uppercase">Insegnamenti del corso di studi</h6>
           <?php
           $insegnamenti = getInsegnamentiCorso($info['codice_corso']);
           if (!empty($insegnamenti)) {
@@ -125,51 +121,86 @@ if (isset($_POST['rimuovi_esame'])) {
         </div>
         <!-- Carriera -->
         <div class="row mx-5 my-4 p-3 shadow rounded" id="carriera">
-          <h3 class="mb-4">Carriera dello studente</h3>
-          <div class="d-flex mt-2 mb-4">
-            <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-              <input type="hidden" name="tipo_carriera" value="carriera_valida">
-              <button type="submit" class="btn custom-btn m-0">Carriera valida</button>
-            </form>
-            <form class="mx-3" method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-              <input type="hidden" name="tipo_carriera" value="carriera_completa">
-              <button type="submit" class="btn custom-btn">Carriera completa</button>
-            </form>
+          <h6 class="mb-4 text-uppercase">Carriera dello studente</h6>
+          <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+              <button type="button" class="nav-link active" id="nav-valida-tab" data-bs-toggle="tab" data-bs-target="#carriera_valida" role="tab" aria-controls="nav-valida" aria-selected="true">Carriera valida</button>
+              <button type="button" class="nav-link" id="nav-completa-tab" data-bs-toggle="tab" data-bs-target="#carriera_completa" role="tab" aria-controls="nav-completa" aria-selected="false">Carriera completa</button>
+            </div>
+          </nav>
+          <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="carriera_valida" role="tabpanel" aria-labelledby="valida" tabindex="0">
+              <?php
+              $carriera_valida = array();
+              if (isset($_SESSION['carriera_valida'])) {
+                $carriera_valida = $_SESSION['carriera_valida'];
+              }
+              if (!empty($carriera_valida)) {
+              ?>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">C.Esame</th>
+                      <th scope="col">Esame</th>
+                      <th scope="col">Valutazione</th>
+                      <th class="d-none d-sm-table-cell" scope="col">Data verbalizzazione</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($carriera_valida as $voto) { ?>
+                      <tr>
+                        <th scope="row"><?php echo $voto['codice']; ?></th>
+                        <td><?php echo $voto['nome']; ?></td>
+                        <td><?php echo $voto['voto']; ?></td>
+                        <td class="d-none d-sm-table-cell"><?php echo $voto['data_verbalizzazione']; ?></td>
+                      </tr>
+                    <?php } ?>
+                  </tbody>
+                </table>
+              <?php
+              } else { ?>
+                <div class="alert alert-danger my-3">Nessun esame disponibile.</div>
+              <?php } ?>
+            </div>
+            <div class="tab-pane fade" id="carriera_completa" role="tabpanel" aria-labelledby="completa" tabindex="0">
+              <?php
+              $carriera_completa = array();
+              if (isset($_SESSION['carriera_completa'])) {
+                $carriera_completa = $_SESSION['carriera_completa'];
+              }
+              if (!empty($carriera_completa)) {
+              ?>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">C.Esame</th>
+                      <th scope="col">Esame</th>
+                      <th scope="col">Valutazione</th>
+                      <th class="d-none d-sm-table-cell" scope="col">Data verbalizzazione</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach ($carriera_completa as $voto) { ?>
+                      <tr>
+                        <th scope="row"><?php echo $voto['codice']; ?></th>
+                        <td><?php echo $voto['nome']; ?></td>
+                        <td><?php echo $voto['voto']; ?></td>
+                        <td class="d-none d-sm-table-cell"><?php echo $voto['data_verbalizzazione']; ?></td>
+                      </tr>
+                    <?php } ?>
+                  </tbody>
+                </table>
+              <?php
+              } else { ?>
+                <div class="alert alert-danger my-3">Nessun esame disponibile.</div>
+              <?php } ?>
+            </div>
           </div>
-          <?php
-          if (isset($_SESSION['voti'])) {
-            $voti = $_SESSION['voti'];
-
-          ?>
-            <table class="table">
-              <thead>
-                <tr>
-                  <th scope="col">C.Esame</th>
-                  <th scope="col">Esame</th>
-                  <th scope="col">Valutazione</th>
-                  <th class="d-none d-sm-table-cell" scope="col">Data verbalizzazione</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php foreach ($voti as $voto) { ?>
-                  <tr>
-                    <th scope="row"><?php echo $voto['codice']; ?></th>
-                    <td><?php echo $voto['nome']; ?></td>
-                    <td><?php echo $voto['voto']; ?></td>
-                    <td class="d-none d-sm-table-cell"><?php echo $voto['data_verbalizzazione']; ?></td>
-                  </tr>
-                <?php } ?>
-              </tbody>
-            </table>
-          <?php
-          } elseif (isset($_POST['tipo_carriera'])) { ?>
-            <div class="alert alert-danger my-3">Nessun esame disponibile.</div>
-          <?php } ?>
         </div>
+
         <!-- Iscrizione agli esami  -->
         <div class="row mx-5 my-4 p-3 shadow rounded" id="esami">
-          <h3 class="mb-4">Esami in programma</h3>
-          <a href="./iscrizioneEsame.php" class="btn custom-btn mt-2 mb-4 w-50">Iscrizione a un nuovo esame</a>
+          <h6 class="mb-4 text-uppercase">Esami in programma</h6>
           <?php
           $iscrizioni = getIscrizioni($_SESSION['id']);
           if (!empty($iscrizioni)) {
@@ -211,6 +242,7 @@ if (isset($_POST['rimuovi_esame'])) {
             echo '<div class="alert alert-danger mt-3">Qualcosa è andato storto nella rimozione</div>';
           }
           ?>
+          <a href="./iscrizioneEsame.php" class="btn custom-btn my-4 p-md-2 mx-auto mx-md-0 w-50">Iscrizione a un nuovo esame</a>
         </div>
       </div>
     </div>

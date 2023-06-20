@@ -52,36 +52,36 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
       <div id="content" class="col py-3 offset-1 offset-md-2 offset-sm-3">
         <!-- Informazioni sui corsi -->
         <div class="row mx-3 my-4">
-          <h2 class="mb-4">Informazioni sui corsi di laurea</h2>
-          <h4 class="text-secondary">
-            Questa sezione ti permette di scoprire i diversi corsi di laurea
-            offerti dall'ateneo
-          </h4>
-          <div class="row row-cols-xl-3 g-4">
-            <?php
-            $corsi = getCorsi();
-            foreach ($corsi as $corso) {
-            ?>
-              <div class="col">
-                <div class="card mx-auto shadow rounded" style="width: 19rem; height:20rem; border-style: none;">
-                  <div class="card-body">
-                    <h5 class="card-title"><?php echo $corso['nome']; ?></h5>
-                    <h6 class="card-subtitle mb-2 text-body-secondary"> Facoltà:
-                      <?php echo $corso['facoltà']; ?>
-                      <p class="card-text">Durata corso: <?php echo $corso['durata']; ?></p>
-                    </h6>
-                    <p class="card-text h-50" style="display: -webkit-box;-webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden;"><?php echo $corso['descrizione']; ?></p>
-                    <form method="POST" action="./infoCorso.php">
-                      <input type="hidden" name="corso" value="<?php echo htmlspecialchars(json_encode($corso)); ?>">
-                      <button type="submit" class="btn btn-link px-0">Leggi di più</button>
-                    </form>
+          <h4 class="mb-4 text-uppercase">Informazioni sui corsi di laurea</h2>
+            <h5 class="text-secondary">
+              Questa sezione ti permette di scoprire i diversi corsi di laurea
+              offerti dall'ateneo
+            </h5>
+            <div class="row row-cols-xl-3 g-4">
+              <?php
+              $corsi = getCorsi();
+              foreach ($corsi as $corso) {
+              ?>
+                <div class="col">
+                  <div class="card mx-auto shadow rounded" style="width: 19rem; height:20rem; border-style: none;">
+                    <div class="card-body">
+                      <h5 class="card-title"><?php echo $corso['nome']; ?></h5>
+                      <h6 class="card-subtitle mb-2 text-body-secondary"> Facoltà:
+                        <?php echo $corso['facoltà']; ?>
+                        <p class="card-text">Durata corso: <?php echo $corso['durata']; ?></p>
+                      </h6>
+                      <p class="card-text h-50" style="display: -webkit-box;-webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden;"><?php echo $corso['descrizione']; ?></p>
+                      <form method="POST" action="./infoCorso.php">
+                        <input type="hidden" name="corso" value="<?php echo htmlspecialchars(json_encode($corso)); ?>">
+                        <button type="submit" class="btn btn-link px-0">Leggi di più</button>
+                      </form>
+                    </div>
                   </div>
                 </div>
-              </div>
-            <?php
-            }
-            ?>
-          </div>
+              <?php
+              }
+              ?>
+            </div>
         </div>
       </div>
     </div>

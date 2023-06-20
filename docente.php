@@ -58,24 +58,21 @@ if (isset($_POST['rimuovi_appello'])) {
       <!-- Contenuto di destra -->
       <div id="content" class="col py-3 offset-1 offset-md-3 offset-lg-2 offset-sm-3">
         <!-- Informazioni generali -->
-        <div class="row mx-5 my-4 p-3 shadow rounded" id="informazioni">
-          <h2 class="mb-4">Informazioni personali</h2>
+        <div class="row mx-3 mx-md-5 my-4 p-3 shadow rounded" id="informazioni_personali">
+          <h6 class="mb-4 text-uppercase">Informazioni personali</h6>
           <?php
           $info = getInfoDocente($_SESSION['user']);
           ?>
-          <div class="d-flex mb-1">
-            <label class="fs-6"><strong>Nome: </strong><?php echo ($info['nome']); ?></label>
-          </div>
-          <div class="d-flex mb-1">
-            <label class="fs-6 "><strong>Cognome: </strong><?php echo ($info['cognome']); ?></label>
+          <div class="mb-1">
+            <label class="fs-2"><strong><?php echo ($info['nome'] . ' ' . $info['cognome']); ?></strong></label>
           </div>
           <div class="d-flex mb-1">
             <label class="fs-6 "><strong>Specializzazione: </strong><?php echo ($info['specializzazione']); ?></label>
           </div>
         </div>
         <!-- Insegnamenti del docente -->
-        <div class="row mx-5 my-4 p-3 " id="insegnamenti">
-          <h2 class="mb-1">Insegnamenti</h2>
+        <div class="row mx-3 mx-md-5 my-4 p-3 shadow rounded" id="insegnamenti">
+          <h4 class="mb-4 text-uppercase">Insegnamenti di cui sei repsonsabile</h4>
           <?php
           $insegnamenti = getInsegnamentiDocete($_SESSION['id']);
 
@@ -83,15 +80,15 @@ if (isset($_POST['rimuovi_appello'])) {
             foreach ($insegnamenti as $insegnamento) {
               $numero_studenti = numeroStudentiInsegnamento($insegnamento['codice'], $insegnamento['corso_studi'])
           ?>
-              <div class="card my-2 shadow" style="max-width: 540px; border-style: none;">
+              <div class="card my-4 border" style="max-width: 540px; border-style: none;">
                 <div class="row g-0">
-                  <div class="col-md-5 py-5 px-3">
+                  <div class="col-md-5 py-3 py-md-5 px-3">
                     <h5 class="card-title mb-3"><?php echo $insegnamento['nome'] ?></h5>
                     <h6 class="card-text"><strong>Corso di studi: </strong><?php echo $insegnamento['corso_studi'] ?></h6>
                     <h6 class="card-text"><strong>Anno: </strong><?php echo $insegnamento['anno'] ?></h6>
                     <h6 class="card-text"><strong>N.Studenti: </strong><?php echo $numero_studenti ?></h6>
                   </div>
-                  <div class="col-md-7 mt-md-0 mt-3 py-5 px-3">
+                  <div class="col-md-7 mt-md-0 mt-3 py-md-5 pb-3 px-3">
                     <h5 class="card-title">Descrizione:</h5>
                     <h6 class="card-text"><?php echo $insegnamento['descrizione'] ?> </h6>
                   </div>
@@ -102,28 +99,24 @@ if (isset($_POST['rimuovi_appello'])) {
             <div class="alert alert-secondary mt-3">Nessun insegnamento disponibile</div>
           <?php } ?>
         </div>
-        <!-- Gestione esami -->
-        <div class="row mx-5 my-4 p-3" id="gestione-esami">
-          <h2 class="mb-4">Calendario appelli</h2>
+        <!-- Calendario esami -->
+        <div class="row mx-3 mx-md-5 my-4 p-3 shadow rounded" id="gestione-esami">
+          <h4 class="mb-4 text-uppercase">Calendario appelli</h4>
           <?php
           foreach ($insegnamenti as $insegnamento) {
             $codice_esame = getEsameByInsegnamento($insegnamento['codice']);
             $appelli = getAppelliEsame($codice_esame);
           ?>
 
-            <div class="row my-4 p-3 shadow rounded" id="esami">
+            <div class=" my-4 p-3" id="esami">
 
-              <h4 class="mb-4">Appelli di <strong><?php echo $insegnamento['nome'] ?></strong> </h4>
-              <form method="GET" action="./inserimentoAppello.php">
-                <input type="hidden" name="codice_esame" value="<?php echo $codice_esame; ?>">
-                <input type="hidden" name="corso_studi" value="<?php echo $insegnamento['corso_studi']; ?>">
-                <button type="submit" class="btn custom-btn my-2 my-sm-0">Inserisci un nuovo appello</button>
-              </form>
+              <h6 class="mb-4 text-uppercase">Appelli di <strong><?php echo $insegnamento['nome'] ?></strong>
+              </h6>
 
               <?php
               if (!empty($appelli)) {
               ?>
-                <table class="table">
+                <table class="table mx-2">
                   <thead>
                     <tr>
                       <th scope="col">Nome esame</th>
@@ -165,15 +158,17 @@ if (isset($_POST['rimuovi_appello'])) {
                 echo '<div class="alert alert-danger mt-3">Qualcosa è andato storto nella rimozione</div>';
               }
               ?>
+              <form method="GET" action="./inserimentoAppello.php">
+                <input type="hidden" name="codice_esame" value="<?php echo $codice_esame; ?>">
+                <input type="hidden" name="corso_studi" value="<?php echo $insegnamento['corso_studi']; ?>">
+                <button type="submit" class="btn custom-btn my-2 my-sm-0">Inserisci un nuovo appello</button>
+              </form>
             </div>
           <?php
           }
           ?>
 
         </div>
-
-
-
 
       </div>
     </div>

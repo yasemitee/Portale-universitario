@@ -25,7 +25,6 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
     header("Location: index.php");
     exit();
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -46,34 +45,62 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
         <div class="row flex-nowrap">
             <!-- Sidebar -->
             <?php
-            include_once('lib/sidebar-studente.php');
+            if ($_SESSION['tipo_utente'] == 'studente') {
+                include_once('lib/sidebar-studente.php');
+            } elseif ($_SESSION['tipo_utente'] == 'docente') {
+                include_once('lib/sidebar-docente.php');
+            } elseif ($_SESSION['tipo_utente'] == 'segretario') {
+                include_once('lib/sidebar-segreteria.php');
+            }
             ?>
             <!-- Contenuto di destra -->
             <div id="content" class="col py-3 offset-1 offset-md-2 offset-sm-3">
                 <div class="row mx-5 my-4 p-3 shadow rounded">
-                    <h3 class="mb-4">Informazioni personali</h3>
+                    <h4 class="mb-4 text-uppercase">Informazioni personali</h4>
                     <div class="d-flex mb-1">
                         <?php
-                        $info = getInfoStudente($_SESSION['id']);
+                        if ($_SESSION['tipo_utente'] == 'studente') {
+                            $info = getInfoStudente($_SESSION['user']);
+                        } elseif ($_SESSION['tipo_utente'] == 'docente') {
+                            $info = getInfoDocente($_SESSION['user']);
+                        } elseif ($_SESSION['tipo_utente'] == 'segretario') {
+                            $info = getInfoSegretario($_SESSION['user']);
+                        }
                         ?>
-                        <label class="fs-6"><strong>Nome: </strong><?php echo ($info['nome_studente']); ?></label>
+                        <label class="fs-6"><strong>Nome: </strong><?php echo ($info['nome']); ?></label>
                     </div>
                     <div class="d-flex mb-1">
-                        <label class="fs-6 "><strong>Cognome: </strong><?php echo ($info['cognome_studente']); ?></label>
+                        <label class="fs-6 "><strong>Cognome: </strong><?php echo ($info['cognome']); ?></label>
                     </div>
                     <div class="d-flex mb-1">
-                        <label class="fs-6 "><strong>Matricola: </strong><?php echo ($info['matricola']); ?></label>
+                        <label class="fs-6 "><strong>E-Mail: </strong><?php echo ($info['email']); ?></label>
                     </div>
-                    <div class="d-flex my-1">
-                        <label class="fs-6 "><strong>Durata corso: </strong><?php echo ($info['durata']); ?></label>
-                    </div>
-                    <div class="d-flex">
-                        <label class="fs-6  my-1"><strong>Corso: </strong><?php echo ($info['nome']); ?></label>
-                    </div>
-                    <div class="d-flex">
-                        <label class="fs-6  my-1"><strong>Anno di frequenza: </strong><?php echo ($info['anno_frequenza']); ?></label>
-                    </div>
-                    <a href="./cambiaPassword.php" class="btn btn-dark mt-3">Cambia password</a>
+                    <?php
+                    if ($_SESSION['tipo_utente'] == 'studente') {
+                    ?>
+                        <div class="d-flex mb-1">
+                            <label class="fs-6 "><strong>Matricola: </strong><?php echo ($info['matricola']); ?></label>
+                        </div>
+                        <div class="d-flex my-1">
+                            <label class="fs-6 "><strong>Durata corso: </strong><?php echo ($info['durata']); ?></label>
+                        </div>
+                        <div class="d-flex">
+                            <label class="fs-6  my-1"><strong>Corso: </strong><?php echo ($info['nome']); ?></label>
+                        </div>
+                        <div class="d-flex">
+                            <label class="fs-6  my-1"><strong>Anno di frequenza: </strong><?php echo ($info['anno_frequenza']); ?></label>
+                        </div>
+                    <?php
+                    } elseif ($_SESSION['tipo_utente'] == 'docente') {
+                    ?>
+                        <div class="d-flex">
+                            <label class="fs-6  my-1"><strong>Specializzazione: </strong><?php echo ($info['specializzazione']); ?></label>
+                        </div>
+                    <?php
+                    }
+                    ?>
+
+                    <a href="./cambiaPassword.php" class="btn custom-btn mt-3">Cambia password</a>
                 </div>
             </div>
         </div>

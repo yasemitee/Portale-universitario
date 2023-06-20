@@ -50,6 +50,7 @@ function login($email, $password)
         $nome = $row['nome'];
         $cognome = $row['cognome'];
         $_SESSION['id'] = $id;
+        $_SESSION['tipo_utente'] = 'studente';
         $_SESSION['nome'] = $nome;
         $_SESSION['cognome'] = $cognome;
         $header = 'Location: studente.php';
@@ -59,6 +60,7 @@ function login($email, $password)
         $nome = $row['nome'];
         $cognome = $row['cognome'];
         $_SESSION['id'] = $id;
+        $_SESSION['tipo_utente'] = 'docente';
         $_SESSION['nome'] = $nome;
         $_SESSION['cognome'] = $cognome;
         $header = 'Location: docente.php';
@@ -68,6 +70,7 @@ function login($email, $password)
         $nome = $row['nome'];
         $cognome = $row['cognome'];
         $_SESSION['id'] = $id;
+        $_SESSION['tipo_utente'] = 'segretario';
         $_SESSION['nome'] = $nome;
         $_SESSION['cognome'] = $cognome;
         $header = 'Location: segreteria.php';
@@ -293,11 +296,25 @@ function close_pg_connection($db)
     return pg_close($db);
 }
 
-function cambiaPassword($email, $vecchia_password, $nuova_password)
+function cambiaPassword($email, $tipo_utente, $vecchia_password, $nuova_password)
 {
     $db = open_pg_connection();
-    $sql = "UPDATE portale_uni.studente
-    SET password = $3 WHERE email = $1 AND password = $2;";
+
+    switch ($tipo_utente) {
+        case 'studente':
+            $sql = "UPDATE portale_uni.studente
+                    SET password = $3 WHERE email = $1 AND password = $2;";
+            break;
+        case 'docente':
+            $sql = "UPDATE portale_uni.docente
+                        SET password = $3 WHERE email = $1 AND password = $2;";
+            break;
+        case 'segretario':
+            $sql = "UPDATE portale_uni.segreteria
+                            SET password = $3 WHERE email = $1 AND password = $2;";
+            break;
+    }
+
 
     $params = array(
         $email,
@@ -363,14 +380,14 @@ function getInfoDocente($email)
     close_pg_connection($db);
 }
 
-function getInfoSegretario($id_segretario)
+function getInfoSegretario($email)
 {
     $db = open_pg_connection();
     $sql = "SELECT s.nome, s.cognome, email
     FROM portale_uni.segreteria s
-    WHERE s.id  = $1;";
+    WHERE s.email  = $1;";
     $params = array(
-        $id_segretario
+        $email
     );
 
     $result = pg_prepare($db, "get_info_segretario", $sql);
@@ -697,8 +714,9 @@ function getEsamiCorso($corso)
     on e.insegnamento = i.codice AND e.corso_studi = i.corso_studi
     inner join portale_uni.appello a
     on a.esame = e.codice
+    LEFT JOIN portale_uni.carriera c ON c.esame = e.codice
     WHERE i.corso_studi  = $1
-    order by a.data;";
+    order by CASE WHEN c.id IS NULL THEN 0 ELSE 1 END, e.codice,a.data;";
 
     $params = array(
         $corso

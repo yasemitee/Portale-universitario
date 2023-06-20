@@ -27,7 +27,7 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
 }
 
 if (isset($_POST) && isset($_POST['vecchia_password']) && isset($_POST['nuova_password'])) {
-    $err = cambiaPassword($logged, $_POST['vecchia_password'], $_POST['nuova_password']);
+    $err = cambiaPassword($logged, $_SESSION['tipo_utente'], $_POST['vecchia_password'], $_POST['nuova_password']);
 }
 
 ?>
@@ -50,18 +50,25 @@ if (isset($_POST) && isset($_POST['vecchia_password']) && isset($_POST['nuova_pa
         <div class="row flex-nowrap">
             <!-- Sidebar -->
             <?php
-            include_once('lib/sidebar-studente.php');
+            if ($_SESSION['tipo_utente'] == 'studente') {
+                include_once('lib/sidebar-studente.php');
+            } elseif ($_SESSION['tipo_utente'] == 'docente') {
+                include_once('lib/sidebar-docente.php');
+            } elseif ($_SESSION['tipo_utente'] == 'segretario') {
+                include_once('lib/sidebar-segreteria.php');
+            }
+
             ?>
             <!-- Contenuto di destra -->
             <div id="content" class="col py-3 overflow-y-scroll offset-1 offset-md-2 offset-sm-3">
                 <div class="row mx-5 my-4 p-3 shadow rounded">
-                    <h3 class="mb-4">Cambio password</h3>
+                    <h4 class="mb-4 text-uppercase">Cambio password</h4>
                     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
                         <label class="form-label">Password attuale</label>
                         <input type="password" class="form-control mb-3" name="vecchia_password" placeholder="inserisci la password attuale" />
                         <label class="form-label">Nuova password</label>
                         <input type="password" class="form-control mb-3" name="nuova_password" placeholder="inserisci la nuova password" />
-                        <button type="submit" class="btn btn-dark w-100 mt-3">Conferma</button>
+                        <button type="submit" class="btn custom-btn w-100 mt-3">Conferma</button>
                     </form>
                     <?php if (!empty($err)) { ?>
                         <div class="alert alert-danger  mx-auto my-4"><?php echo $err; ?></div>

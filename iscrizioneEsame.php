@@ -59,7 +59,7 @@ if (isset($_POST['codice_esame']) && isset($_POST['id_appello'])) {
             <!-- Contenuto di destra -->
             <div id="content" class="col py-3  offset-1 offset-md-2 offset-sm-3">
                 <div class="row mx-5 my-4 p-3 shadow rounded">
-                    <h3 class="mb-4">Iscrizione a un esame</h3>
+                    <h5 class="mb-4 text-uppercase">Iscrizione a un nuovo esame</h5>
                     <?php
                     $esami = getEsamiCorso($info['codice_corso']);
                     if (!empty($esami)) {
