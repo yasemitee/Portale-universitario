@@ -199,7 +199,7 @@ function inserisciCorso($codice, $nome, $descrizione, $facoltà, $durata)
     return $result !== false;
 }
 
-function inserisciInsegnamento($codice, $nome, $corso_studi, $descrizione, $anno, $docente_responsabile)
+function inserisciInsegnamento($codice, $nome, $corso_studi, $descrizione, $anno, $docente_responsabile, $propedeuticità)
 {
     if (empty($codice) || empty($nome) || empty($descrizione) || empty($corso_studi) || empty($anno) || empty($docente_responsabile)) {
         return false;
@@ -239,6 +239,7 @@ function inserisciInsegnamento($codice, $nome, $corso_studi, $descrizione, $anno
         return false;
     }
 
+
     $sql = "INSERT INTO portale_uni.insegnamento(codice, nome, descrizione, anno, docente_responsabile, corso_studi)
             VALUES ($1, $2, $3, $4, $5, $6)";
     $params = array(
@@ -252,6 +253,31 @@ function inserisciInsegnamento($codice, $nome, $corso_studi, $descrizione, $anno
 
     $result = pg_prepare($db, "inserisci_insegnamento", $sql);
     $result = pg_execute($db, "inserisci_insegnamento", $params);
+
+    if ($result == false) {
+        close_pg_connection($db);
+        return false;
+    }
+
+    if (!empty($propedeuticità)) {
+        $sql = "INSERT INTO portale_uni.propedeuticità(insegnamento, corso_studi, propedeuticità)
+    VALUES ($1, $2, $3)";
+        $params = array(
+            $codice,
+            $corso_studi,
+            $propedeuticità
+        );
+
+        $result = pg_prepare($db, "inserisci_propedeuticità", $sql);
+        $result = pg_execute($db, "inserisci_propedeuticità", $params);
+    }
+
+    if ($result == false) {
+        removeInsegnamento($codice);
+        close_pg_connection($db);
+        return false;
+    }
+
 
     close_pg_connection($db);
     return $result !== false;
@@ -320,7 +346,7 @@ function getInfoStudente($email)
 function getInfoDocente($email)
 {
     $db = open_pg_connection();
-    $sql = "SELECT d.nome, d.cognome, d.email, d.specializzazione
+    $sql = "SELECT d.id,d.nome, d.cognome, d.email, d.specializzazione
     FROM portale_uni.docente d
     WHERE d.email  = $1;";
     $params = array(
@@ -357,6 +383,47 @@ function getInfoSegretario($id_segretario)
     close_pg_connection($db);
 }
 
+function getInfoCorso($codice_corso)
+{
+    $db = open_pg_connection();
+
+    $sql = "SELECT *
+    from portale_uni.corso
+    where codice = $1";
+    $params = array(
+        $codice_corso
+    );
+
+    $result = pg_prepare($db, "get_info_corso", $sql);
+    $result = pg_execute($db, "get_info_corso", $params);
+
+    if ($row = pg_fetch_assoc($result)) {
+        close_pg_connection($db);
+        return $row;
+    }
+}
+
+function getInfoInsegnamento($codice_insegnamento)
+{
+    $db = open_pg_connection();
+
+    $sql = "SELECT i.*, d.nome as nome_docente, d.cognome as cognome_docente
+    from portale_uni.insegnamento i inner join portale_uni.docente d
+    on i.docente_responsabile = d.id
+    where i.codice = $1";
+    $params = array(
+        $codice_insegnamento
+    );
+
+    $result = pg_prepare($db, "get_info_insegnamento", $sql);
+    $result = pg_execute($db, "get_info_insegnamento", $params);
+
+    if ($row = pg_fetch_assoc($result)) {
+        close_pg_connection($db);
+        return $row;
+    }
+}
+
 function getInsegnamentiCorso($corso)
 {
     $db = open_pg_connection();
@@ -370,8 +437,8 @@ function getInsegnamentiCorso($corso)
         $corso
     );
 
-    $result = pg_prepare($db, "get_info_corso", $sql);
-    $result = pg_execute($db, "get_info_corso", $params);
+    $result = pg_prepare($db, "get_insegnamenti_corso", $sql);
+    $result = pg_execute($db, "get_insegnamenti_corso", $params);
 
     $insegnamenti = array();
     while ($row = pg_fetch_assoc($result)) {
@@ -381,6 +448,106 @@ function getInsegnamentiCorso($corso)
     close_pg_connection($db);
 }
 
+function removeStudente($id_studente)
+{
+    $err = '';
+    $db = open_pg_connection();
+    $sql = "DELETE FROM portale_uni.studente WHERE id = $1;";
+    $params = array(
+        $id_studente
+    );
+
+    $result = pg_prepare($db, "remove_studente", $sql);
+    $result = pg_execute($db, "remove_studente", $params);
+
+    if (pg_affected_rows($result) > 0) {
+        $err = "";
+    } else {
+        $err = "Si è verificato un errore durante la rimozione dello studente.";
+    }
+
+    close_pg_connection($db);
+
+    return $err;
+}
+
+
+function removeDocente($id_docente)
+{
+    $err = '';
+    $db = open_pg_connection();
+    $sql = "DELETE FROM portale_uni.docente WHERE id = $1;";
+    $params = array(
+        $id_docente
+    );
+
+    $result = pg_prepare($db, "remove_docente", $sql);
+    $result = pg_execute($db, "remove_docente", $params);
+
+    if (pg_affected_rows($result) > 0) {
+        $err = "";
+    } else {
+        $err = "Si è verificato un errore durante la rimozione del docente.";
+    }
+
+    close_pg_connection($db);
+
+    return $err;
+}
+
+function removeCorso($codice_corso)
+{
+    $err = '';
+    $db = open_pg_connection();
+    $sql = "DELETE FROM portale_uni.corso WHERE codice = $1;";
+    $params = array(
+        $codice_corso
+    );
+
+    $result = pg_prepare($db, "remove_corso", $sql);
+    $result = pg_execute($db, "remove_corso", $params);
+
+    if (pg_affected_rows($result) > 0) {
+        $err = "";
+    } else {
+        $err = "Si è verificato un errore durante la rimozione del corso.";
+    }
+
+    close_pg_connection($db);
+
+    return $err;
+}
+function removeInsegnamento($codice_insegnamento)
+{
+    $err = '';
+    $db = open_pg_connection();
+
+    $err = "";
+    $sql = "DELETE FROM portale_uni.propedeuticità WHERE insegnamento = $1;";
+    $params = array(
+        $codice_insegnamento
+    );
+
+    $result = pg_prepare($db, "remove_insegnamento_propedeuticità", $sql);
+    $result = pg_execute($db, "remove_insegnamento_propedeuticità", $params);
+
+
+    $sql = "DELETE FROM portale_uni.insegnamento WHERE codice = $1;";
+    $params = array(
+        $codice_insegnamento
+    );
+
+    $result = pg_prepare($db, "remove_insegnamento", $sql);
+    $result = pg_execute($db, "remove_insegnamento", $params);
+
+    if (pg_affected_rows($result) > 0) {
+        $err = '';
+    } else {
+        $err = "Si è verificato un errore durante la rimozione dell'insegnamento.";
+    }
+
+    return $err;
+}
 function getInsegnamentiDocete($id_docente)
 {
     $db = open_pg_connection();
@@ -600,48 +767,19 @@ function inserimentoAppello($codice_esame, $data_appello, $corso_studi)
 {
     $db = open_pg_connection();
     $err = "";
-    // Recupera l'anno dell'insegnamento associato all'esame
-    $sql = "SELECT anno 
-    FROM portale_uni.insegnamento 
-    WHERE codice = 
-    (SELECT insegnamento FROM portale_uni.esame WHERE codice = $1 and corso_studi =$2) 
-    and corso_studi = 
-    (SELECT corso_studi FROM portale_uni.esame WHERE corso_studi = $2 and codice=$1) ";
-    $params = array($codice_esame, $corso_studi);
-    $result = pg_prepare($db, "get_anno_esame", $sql);
-    $result = pg_execute($db, "get_anno_esame", $params);
 
-    if ($row = pg_fetch_assoc($result)) {
-        $anno = $row['anno'];
-
-        // Verifica se esistono appelli per altri esami dello stesso anno e corso, nella stessa giornata
-        $sql = "SELECT COUNT(*) 
-              FROM portale_uni.appello a INNER JOIN portale_uni.esame e 
-              ON a.esame = e.codice
-              INNER JOIN portale_uni.insegnamento i 
-              ON e.insegnamento = i.codice and e.corso_studi = i.corso_studi
-              WHERE i.anno = $1 AND a.data = $2 AND i.corso_studi = $3";
-        $params = array($anno, $data_appello, $corso_studi);
-        $result = pg_prepare($db, "check_nuovo_appello", $sql);
-        $result = pg_execute($db, "check_nuovo_appello", $params);
-
-        if ($result) {
-            $row = pg_fetch_row($result);
-            $count = $row[0];
-
-            if ($count > 0) {
-                $err = "Non è possibile programmare nella stessa giornata, appelli per più esami dello stesso anno del corso di laurea " . $corso_studi;
-            } else {
-                $sql = "INSERT INTO portale_uni.appello (data, esame)
+    $sql = "INSERT INTO portale_uni.appello (data, esame)
                 VALUES ($1,$2)";
-                $params = array($data_appello, $codice_esame);
-                $result = pg_prepare($db, "inserisci_appello", $sql);
-                $result = pg_execute($db, "inserisci_appello", $params);
-            }
-        } else {
-            $err = "Qualcosa è andato storto";
-        }
+    $params = array($data_appello, $codice_esame);
+    $result = pg_prepare($db, "inserisci_appello", $sql);
+    $result = pg_execute($db, "inserisci_appello", $params);
+
+    $err = pg_last_error($db);
+
+    if (preg_match('/ERROR:\s*(.*)\s*CONTEXT:/s', $err, $matches)) {
+        $err = $matches[1];
     }
+
     return $err;
 }
 
@@ -699,32 +837,6 @@ function iscriviEsame($id_studente, $codice_esame, $codice_corso, $id_appello, $
     $db = open_pg_connection();
 
 
-    // Verifica se l'insegnamento è previsto dal corso di studi dello studente
-    $sql = "SELECT codice_insegnamento 
-    FROM portale_uni.studente_insegnamento 
-    WHERE id = $1 AND codice_insegnamento = 
-    (SELECT i.codice 
-    from portale_uni.insegnamento i inner join portale_uni.esame e 
-    on i.codice = e.insegnamento AND i.corso_studi = e.corso_studi
-    where e.codice = $2)";
-
-    $params = array(
-        $id_studente,
-        $codice_esame
-    );
-
-    $result = pg_prepare($db, "verifica_insegnamento", $sql);
-    $result = pg_execute($db, "verifica_insegnamento", $params);
-
-
-    $count = pg_num_rows($result);
-
-    if ($count == 0) {
-        $err = "L'insegnamento non è previsto nel tuo corso di studi";
-        return $err;
-    }
-
-
     $sql = "INSERT INTO portale_uni.iscrizione (id_studente, esame, appello) VALUES ($1, $2, $3)";
     $params = array(
         $id_studente,
@@ -735,15 +847,6 @@ function iscriviEsame($id_studente, $codice_esame, $codice_corso, $id_appello, $
     $result = pg_execute($db, "iscrivi_esame", $params);
 
     $err = pg_last_error($db);
-
-    // $error_index = strpos($err, "ERROR:");
-    // $context_index = strpos($err, "CONTEXT:");
-    // if ($error_index !== false) {
-    //     $err = substr($err, $error_index + 6);
-    //     if ($context_index !== false) {
-    //         $err = substr($err, 0, $context_index - 6);
-    //     }
-    // }
 
     if (preg_match('/ERROR:\s*(.*)\s*CONTEXT:/s', $err, $matches)) {
         $err = $matches[1];

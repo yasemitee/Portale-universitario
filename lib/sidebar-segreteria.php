@@ -11,13 +11,13 @@
         </a>
       </li>
       <li class="nav-item">
-        <a href="segreteria.php#insegnamenti" class="nav-link align-middle px-0 pt-3 text-white hover-underline-animation">
+        <a href="segreteria.php#sezione_utenti" class="nav-link align-middle px-0 pt-3 text-white hover-underline-animation">
           <i class="fa-solid fa-book"></i>
           <span class="ms-1 d-none d-sm-inline">Gestione utenti</span>
         </a>
       </li>
       <li class="nav-item">
-        <a href="segreteria.php#gestione-esami" class="nav-link align-middle pt-3 px-0 text-white hover-underline-animation">
+        <a href="segreteria.php#sezione_corsi" class="nav-link align-middle pt-3 px-0 text-white hover-underline-animation">
           <i class="fa-solid fa-toolbox"></i>
           <span class="ms-1 d-none d-sm-inline">Gestione corsi</span>
         </a>

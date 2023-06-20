@@ -121,6 +121,7 @@ if (isset($_POST['codice_esame']) && isset($_POST['id_appello'])) {
                     <?php
                     }
                     ?>
+
                 </div>
             </div>
         </div>
