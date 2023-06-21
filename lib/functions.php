@@ -70,7 +70,7 @@ function login($email, $password)
         $nome = $row['nome'];
         $cognome = $row['cognome'];
         $_SESSION['id'] = $id;
-        $_SESSION['tipo_utente'] = 'segretario';
+        $_SESSION['tipo_utente'] = 'segreteria';
         $_SESSION['nome'] = $nome;
         $_SESSION['cognome'] = $cognome;
         $header = 'Location: segreteria.php';
@@ -287,9 +287,6 @@ function inserisciInsegnamento($codice, $nome, $corso_studi, $descrizione, $anno
 }
 
 
-/*
-Close connection with PostgreSQL server
-*/
 function close_pg_connection($db)
 {
 
@@ -309,7 +306,7 @@ function cambiaPassword($email, $tipo_utente, $vecchia_password, $nuova_password
             $sql = "UPDATE portale_uni.docente
                         SET password = $3 WHERE email = $1 AND password = $2;";
             break;
-        case 'segretario':
+        case 'segretaria':
             $sql = "UPDATE portale_uni.segreteria
                             SET password = $3 WHERE email = $1 AND password = $2;";
             break;
@@ -390,8 +387,8 @@ function getInfoSegretario($email)
         $email
     );
 
-    $result = pg_prepare($db, "get_info_segretario", $sql);
-    $result = pg_execute($db, "get_info_segretario", $params);
+    $result = pg_prepare($db, "get_info_segretaria", $sql);
+    $result = pg_execute($db, "get_info_segretaria", $params);
 
     if ($row = pg_fetch_assoc($result)) {
         return $row;
@@ -492,11 +489,17 @@ function removeStudente($id_studente)
 function removeDocente($id_docente)
 {
     $err = '';
+    $insegnamenti_docente = getInsegnamentiDocete($id_docente);
+    if (count($insegnamenti_docente) > 0) {
+        $err = "Il docente è ancora responsabile degli insegnamenti: ";
+        foreach ($insegnamenti_docente as $insegnamento) {
+            $err .= $insegnamento['codice'] . ' ';
+        }
+        return $err;
+    }
     $db = open_pg_connection();
     $sql = "DELETE FROM portale_uni.docente WHERE id = $1;";
-    $params = array(
-        $id_docente
-    );
+    $params = array($id_docente);
 
     $result = pg_prepare($db, "remove_docente", $sql);
     $result = pg_execute($db, "remove_docente", $params);
@@ -511,6 +514,7 @@ function removeDocente($id_docente)
 
     return $err;
 }
+
 
 function removeCorso($codice_corso)
 {
@@ -612,7 +616,7 @@ function numeroStudentiInsegnamento($codice_insegnamento, $corso_studi)
 function getCarrieraCompleta($id)
 {
     $db = open_pg_connection();
-    $sql = "SELECT c.esame as codice, e.nome, c.voto, c.data_verbalizzazione 
+    $sql = "SELECT c.esame as codice, e.nome, c.voto, TO_CHAR(c.data_verbalizzazione, 'dd/mm/yyyy') as data_verbalizzazione 
     from portale_uni.carriera c inner join portale_uni.esame e 
     on c.esame = e.codice 
     where c.studente = $1
@@ -638,7 +642,7 @@ function getCarrieraCompleta($id)
 function getCarrieraValida($id)
 {
     $db = open_pg_connection();
-    $sql = "SELECT c.esame as codice, e.nome, c.voto, c.data_verbalizzazione 
+    $sql = "SELECT c.esame as codice, e.nome, c.voto, TO_CHAR(c.data_verbalizzazione, 'dd/mm/yyyy') as data_verbalizzazione 
     from portale_uni.carriera c inner join portale_uni.esame e 
     on c.esame = e.codice 
     where c.studente = $1 AND c.voto >= 18
@@ -661,7 +665,8 @@ function getCarrieraValida($id)
 function getCorsi()
 {
     $db = open_pg_connection();
-    $sql = "SELECT * FROM portale_uni.corso";
+    $sql = "SELECT * FROM portale_uni.corso
+    order by facoltà;";
 
     $params = array();
 
@@ -681,7 +686,7 @@ function getCorsi()
 function getIscrizioni($id_studente)
 {
     $db = open_pg_connection();
-    $sql = "SELECT i.id ,e.codice, e.nome, a.data, a.id as id_appello
+    $sql = "SELECT i.id ,e.codice, e.nome, TO_CHAR(a.data, 'dd/mm/yyyy') as data , a.id as id_appello
     from portale_uni.iscrizione i inner join portale_uni.esame e
     on i.esame = e.codice
     inner join portale_uni.appello a
@@ -762,7 +767,7 @@ function getEsameByInsegnamento($codice_insegnamento)
 function getAppelliEsame($codice_esame)
 {
     $db = open_pg_connection();
-    $sql = "SELECT a.id as id_appello, e.codice, e.nome, a.data
+    $sql = "SELECT a.id as id_appello, e.codice, e.nome, TO_CHAR(a.data, 'dd/mm/yyyy') as data
     FROM portale_uni.esame e INNER JOIN portale_uni.appello a
     ON e.codice = a.esame
     where a.esame = $1";
@@ -781,7 +786,7 @@ function getAppelliEsame($codice_esame)
     return $appelli;
 }
 
-function inserimentoAppello($codice_esame, $data_appello, $corso_studi)
+function inserimentoAppello($codice_esame, $data_appello)
 {
     $db = open_pg_connection();
     $err = "";
@@ -815,11 +820,12 @@ function registraVoto($matricola, $codice_esame, $valutazione, $id_appello)
     $result = pg_prepare($db, "get_id_studente", $sql);
     $result = pg_execute($db, "get_id_studente", $params);
 
+
     if ($row = pg_fetch_assoc($result)) {
         $id_studente = $row['id'];
 
         // Verifica se lo studente si è iscritto all'esame
-        $sql = "SELECT COUNT(*)
+        $sql = "SELECT i.id
         from portale_uni.iscrizione i 
         where i.id_studente = $1 AND i.appello = $2";
         $params = array($id_studente, $id_appello);
@@ -827,19 +833,24 @@ function registraVoto($matricola, $codice_esame, $valutazione, $id_appello)
         $result = pg_execute($db, "check_iscrizione", $params);
 
         if ($row = pg_fetch_row($result)) {
-            $count = $row[0];
+            $id_iscrizione = $row[0];
 
-            if ($count != 0) {
+            if (isset($id_iscrizione)) {
                 $sql = "INSERT INTO portale_uni.carriera (studente, esame, voto, data_verbalizzazione)
                 VALUES ($1,$2,$3, current_timestamp);";
                 $params = array($id_studente, $codice_esame, $valutazione);
                 $result = pg_prepare($db, "inserisci_appello", $sql);
                 $result = pg_execute($db, "inserisci_appello", $params);
+                if ($result) {
+                    $err = removeIscrizione($id_iscrizione);
+                } else {
+                    $err = "Registrazione del voto non riuscita, controllare i campi e riprovare";
+                }
             } else {
-                $err = "Lo studente non si è iscritto all'esame";
+                $err = "Lo studente non si è iscritto all'esame o la valutazione è già stata registrata";
             }
         } else {
-            $err = "Studente non esistente";
+            $err = "Studente non si è iscritto all'esame o la valutazione è già stata registrata";
         }
     } else {
         $err = "Studente non esistente";
