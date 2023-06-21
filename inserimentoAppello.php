@@ -1,5 +1,5 @@
 <?php
-ini_set("display_errors", "On");
+ini_set("display_errors", "Off");
 ini_set("error_reporting", E_ALL);
 include_once('lib/functions.php');
 
@@ -29,19 +29,12 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
 
 if (isset($_GET['codice_esame']) && isset($_GET['corso_studi'])) {
     $_SESSION['codice_esame'] = $_GET['codice_esame'];
-    $_SESSION['corso_studi'] = $_GET['corso_studi'];
-}
-
-
-if (isset($_SESSION['codice_esame']) && isset($_SESSION['corso_studi'])) {
-    $codice_esame = $_SESSION['codice_esame'];
-    $corso_studi = $_SESSION['corso_studi'];
 }
 
 
 if (isset($_POST) && isset($_POST['data_appello'])) {
     $data_appello = $_POST['data_appello'];
-    $err = inserimentoAppello($codice_esame, $data_appello, $corso_studi);
+    $err = inserimentoAppello($_SESSION['codice_esame'], $data_appello);
 }
 
 
@@ -78,7 +71,7 @@ if (isset($_POST) && isset($_POST['data_appello'])) {
             <!-- Contenuto di destra -->
             <div id="content" class="col py-3  offset-1 offset-md-3 offset-lg-2 offset-sm-3">
                 <div class="row mx-5 my-4 p-3 shadow rounded">
-                    <h3 class="mb-4 text-uppercase">Inserisci un nuovo appello per <strong><?php echo $codice_esame ?></strong></h3>
+                    <h3 class="mb-4 text-uppercase">Inserisci un nuovo appello per <strong><?php echo  $_SESSION['codice_esame'] ?></strong></h3>
                     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
                         <label for="date" class="col-form-label">Data appello</label>
                         <div class="col-md-6">

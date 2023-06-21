@@ -1,5 +1,5 @@
 <?php
-ini_set("display_errors", "On");
+ini_set("display_errors", "Off");
 ini_set("error_reporting", E_ALL);
 include_once('lib/functions.php');
 
@@ -36,6 +36,10 @@ if (isset($_POST['rimuovi_esame'])) {
   $id_iscrizione = $_POST['rimuovi_esame'];
   $rimozione = removeIscrizione($id_iscrizione);
   header("Location: " . $_SERVER['PHP_SELF'] . "#esami");
+}
+
+if ($_SESSION['tipo_utente'] != 'studente') {
+  header('Location: ' . $_SESSION['tipo_utente'] . '.php');
 }
 
 
@@ -86,6 +90,9 @@ if (isset($_POST['rimuovi_esame'])) {
           </div>
           <div class="d-flex my-1">
             <label class="fs-6 "><strong>Durata corso: </strong><?php echo ($info['durata']); ?></label>
+          </div>
+          <div class="d-flex my-1">
+            <label class="fs-6 "><strong>Anno di iscrizione: </strong><?php echo ($info['anno_iscrizione']); ?></label>
           </div>
         </div>
         <!-- Insegnamenti del corso -->

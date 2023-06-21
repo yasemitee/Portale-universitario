@@ -1,5 +1,5 @@
 <?php
-ini_set("display_errors", "On");
+ini_set("display_errors", "Off");
 ini_set("error_reporting", E_ALL);
 include_once('lib/functions.php');
 
@@ -33,19 +33,11 @@ if (isset($_GET['codice_esame']) && isset($_GET['id_appello'])) {
 }
 
 
-
-if (isset($_SESSION['codice_esame']) && isset($_SESSION['corso_studi'])) {
-
-    $codice_esame = $_SESSION['codice_esame'];
-    $id_appello = $_SESSION['id_appello'];
-}
-
-if (isset($_POST) && isset($_POST['matricola']) && isset($_POST['valutazione']) && isset($id_appello)) {
+if (isset($_POST) && isset($_POST['matricola']) && isset($_POST['valutazione'])) {
     $matricola = $_POST['matricola'];
     $valutazione = $_POST['valutazione'];
-    $err = registraVoto($matricola, $codice_esame, $valutazione, $id_appello);
+    $err = registraVoto($matricola, $_SESSION['codice_esame'], $valutazione, $_SESSION['id_appello']);
 }
-
 
 ?>
 
@@ -74,7 +66,7 @@ if (isset($_POST) && isset($_POST['matricola']) && isset($_POST['valutazione']) 
             <!-- Contenuto di destra -->
             <div id="content" class="col py-3  offset-1 offset-md-3 offset-lg-2 offset-sm-3">
                 <div class="row mx-5 my-4 p-3 shadow rounded">
-                    <h3 class="mb-4">Inserisci le valutazioni per l'esame: <strong><?php echo $codice_esame ?></strong></h3>
+                    <h3 class="mb-4">Inserisci le valutazioni per l'esame: <strong><?php echo $_SESSION['codice_esame'] ?></strong></h3>
                     <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
                         <label class="col-form-label">Matricola Studente</label>
                         <div class="col-md-6">

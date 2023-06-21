@@ -1,12 +1,7 @@
 <?php
-ini_set("display_errors", "On");
+ini_set("display_errors", "Off");
 ini_set("error_reporting", E_ALL);
 include_once('lib/functions.php');
-
-/** 
- * --- Logica per la gestione del login ---
- * 
- */
 
 // variabile per l'utente loggato
 $logged = null;
@@ -40,8 +35,6 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
   $logged = null;
 }
 
-
-
 ?>
 
 <!DOCTYPE html>
@@ -55,7 +48,7 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
   <link rel="stylesheet" href="style/style.css?<?php echo time(); ?>">
 </head>
 
-<body style="background-image: url(img/sfondo-login.svg);">
+<body style="background-image: url(img/sfondo-login-nuovo.svg);">
   <?php
   // se l'utente non e' loggato, mostra form autenticazione
   if (!isset($logged)) {
@@ -89,27 +82,12 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
         <?php
         }
         ?>
-        <?php
-        //se l'utente è loggato
-      } else if (isset($logged)) {
-        header($header);
-        exit();
-      }
-      if ((isset($registrazione))) {
-        if ($registrazione == true) {
-        ?>
-          <div class="alert alert-success mt-3">
-            <p>Registrazione avvenuta con successo! ora attendi che un segretario completi la tua registrazione</p>
-          </div>
-        <?php
-        } else {
-        ?>
-          <div class="alert alert-danger mt-3">
-            <p>Registrazione non riuscita, ti invitiamo a controllare i campi</p>
-          </div>
       <?php
-        }
-      }
+      //se l'utente è loggato
+    } else if (isset($logged)) {
+      header($header);
+      exit();
+    }
       ?>
       </div>
     </div>

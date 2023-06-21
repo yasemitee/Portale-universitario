@@ -1,5 +1,5 @@
 <?php
-ini_set("display_errors", "On");
+ini_set("display_errors", "Off");
 ini_set("error_reporting", E_ALL);
 include_once('lib/functions.php');
 
@@ -54,7 +54,7 @@ if (isset($_POST) && isset($_POST['vecchia_password']) && isset($_POST['nuova_pa
                 include_once('lib/sidebar-studente.php');
             } elseif ($_SESSION['tipo_utente'] == 'docente') {
                 include_once('lib/sidebar-docente.php');
-            } elseif ($_SESSION['tipo_utente'] == 'segretario') {
+            } elseif ($_SESSION['tipo_utente'] == 'segreteria') {
                 include_once('lib/sidebar-segreteria.php');
             }
 

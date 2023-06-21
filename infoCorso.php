@@ -1,5 +1,5 @@
 <?php
-ini_set("display_errors", "On");
+ini_set("display_errors", "Off");
 ini_set("error_reporting", E_ALL);
 include_once('lib/functions.php');
 
@@ -55,42 +55,43 @@ if (isset($_POST) && isset($_POST['corso'])) {
             ?>
             <!-- Contenuto di destra -->
             <div id="content" class="col py-3 offset-1 offset-md-3 offset-lg-2 offset-sm-3">
-
-                <?php
-                if (!empty($insegnamenti)) {
-                ?>
-                    <h3 class="mb-4 text-uppercase mx-5"><?php echo ('Corso di ' . $corso['nome']); ?></h3>
-                    <div class="row mx-5 my-5 p-3 shadow rounded">
-                        <h5 class="mb-4 text-uppercase">Informazioni generali sul corso</h5>
-                        <label class="fs-6 my-2"><strong>Codice del corso: </strong><?php echo ($corso['codice']); ?></label>
-                        <label class="fs-6 my-2"><strong>Durata: </strong><?php echo ($corso['durata']); ?></label>
-                        <label class="fs-6 my-2"><strong>Descrizione: </strong><?php echo ($corso['descrizione']); ?></label>
-                    </div>
-                    <div class="row mx-5 my-5 shadow rounded">
-                        <h5 class="mb-4 text-uppercase my-3">Gli insegnamenti del corso</h5>
-                        <div class="row row-cols-1 row-cols-md-2">
-
-
-                            <?php foreach ($insegnamenti as $insegnamento) {
+                <h3 class="mb-4 text-uppercase mx-5"><?php echo ('Corso di ' . $corso['nome']); ?></h3>
+                <div class="row mx-5 my-5 p-3 shadow rounded">
+                    <h5 class="mb-4 text-uppercase">Informazioni generali sul corso</h5>
+                    <label class="fs-6 my-2"><strong>Codice del corso: </strong><?php echo ($corso['codice']); ?></label>
+                    <label class="fs-6 my-2"><strong>Durata: </strong><?php echo ($corso['durata']); ?></label>
+                    <label class="fs-6 my-2"><strong>Descrizione: </strong><?php echo ($corso['descrizione']); ?></label>
+                </div>
+                <div class="row mx-5 my-5 shadow rounded">
+                    <h5 class="mb-4 text-uppercase my-3">Gli insegnamenti del corso</h5>
+                    <div class="row row-cols-xl-3 g-4 pb-5">
+                        <?php
+                        if (!empty($insegnamenti)) {
+                        ?>
+                            <?php
+                            foreach ($insegnamenti as $insegnamento) {
                             ?>
-                                <div class="card mb-5 p-3 col">
-                                    <div class="row g-0">
-                                        <h5 class="card-title mb-3"><?php echo $insegnamento['nome'] ?></h5>
-                                        <h6 class="card-text"><strong>Docente:</strong><br><?php echo $insegnamento['nome_docente'] . " " . $insegnamento['cognome_docente'] ?></h6>
-                                        <h6 class="card-text"><strong>Anno: </strong><?php echo $insegnamento['anno'] ?></h6>
-
-
-                                        <h5 class="card-title">Descrizione:</h5>
-                                        <h6 class="card-text"><?php echo $insegnamento['descrizione'] ?> </h6>
-
+                                <div class="col">
+                                    <div class="card mx-auto rounded" style="width: 19rem; height:20rem;;">
+                                        <div class="card-body">
+                                            <h5 class="card-title"><?php echo $insegnamento['nome']; ?></h5>
+                                            <h6 class="card-subtitle mb-2 text-body-secondary"> Anno:
+                                                <?php echo $insegnamento['anno']; ?>
+                                                <p class="card-text">Docente: <?php echo $insegnamento['nome_docente'] . " " . $insegnamento['cognome_docente']; ?></p>
+                                            </h6>
+                                            <h6 class="card-subtitle mt-3">Descrizione:</h6>
+                                            <p class="card-text h-50" style="display: -webkit-box;-webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden;"><?php echo $insegnamento['descrizione']; ?></p>
+                                        </div>
                                     </div>
                                 </div>
-                            <?php } ?>
-                        <?php } else { ?>
-                            <div class="alert alert-danger mt-3">Nessun info disponibile sul corso</div>
+                            <?php
+                            }
+                        } else { ?>
+                            <div class="alert alert-danger mt-3 mx-3">Nessun insegnamento disponibile per il corso</div>
                         <?php } ?>
-                        </div>
                     </div>
+                </div>
+
             </div>
         </div>
     </div>

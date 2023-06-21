@@ -1,5 +1,5 @@
 <?php
-ini_set("display_errors", "On");
+ini_set("display_errors", "Off");
 ini_set("error_reporting", E_ALL);
 include_once('lib/functions.php');
 
@@ -49,7 +49,7 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
                 include_once('lib/sidebar-studente.php');
             } elseif ($_SESSION['tipo_utente'] == 'docente') {
                 include_once('lib/sidebar-docente.php');
-            } elseif ($_SESSION['tipo_utente'] == 'segretario') {
+            } elseif ($_SESSION['tipo_utente'] == 'segreteria') {
                 include_once('lib/sidebar-segreteria.php');
             }
             ?>
@@ -63,7 +63,7 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
                             $info = getInfoStudente($_SESSION['user']);
                         } elseif ($_SESSION['tipo_utente'] == 'docente') {
                             $info = getInfoDocente($_SESSION['user']);
-                        } elseif ($_SESSION['tipo_utente'] == 'segretario') {
+                        } elseif ($_SESSION['tipo_utente'] == 'segreteria') {
                             $info = getInfoSegretario($_SESSION['user']);
                         }
                         ?>

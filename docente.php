@@ -1,5 +1,5 @@
 <?php
-ini_set("display_errors", "On");
+ini_set("display_errors", "Off");
 ini_set("error_reporting", E_ALL);
 include_once('lib/functions.php');
 
@@ -30,6 +30,10 @@ if (isset($_POST['rimuovi_appello'])) {
   $id_appello = $_POST['rimuovi_appello'];
   $rimozione = removeAppello($id_appello);
   header("Location: " . $_SERVER['PHP_SELF'] . "#gestione-esami");
+}
+
+if ($_SESSION['tipo_utente'] != 'docente') {
+  header('Location: ' . $_SESSION['tipo_utente'] . '.php');
 }
 
 

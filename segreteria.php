@@ -1,5 +1,5 @@
 <?php
-ini_set("display_errors", "On");
+ini_set("display_errors", "Off");
 ini_set("error_reporting", E_ALL);
 include_once('lib/functions.php');
 
@@ -54,6 +54,7 @@ if (isset($_POST['cerca_utente'])) {
 
   if (!isset($info_utente)) {
     $info_utente = getInfoDocente($email);
+    $insegnamenti_docente = getInsegnamentiDocete($info_utente['id']);
   }
   $_SESSION['info_utente'] = $info_utente;
 } elseif (!isset($_POST['carriera_valida']) && !isset($_POST['carriera_completa'])) {
@@ -119,6 +120,10 @@ if (isset($_POST['elimina_insegnamento'])) {
   $rimozione = removeInsegnamento($codice_insegnamento);
 }
 
+if ($_SESSION['tipo_utente'] != 'segreteria') {
+  header('Location: ' . $_SESSION['tipo_utente'] . '.php');
+}
+
 
 
 ?>
@@ -162,7 +167,7 @@ if (isset($_POST['elimina_insegnamento'])) {
           </div>
         </div>
         <div class="row mx-5 my-4 p-3 shadow rounded" id="sezione_utenti">
-          <h3 class="mb-4 text-uppercase">Sezione utenti</h3>
+          <h3 class="mb-4 text-uppercase">Gestione utenti</h3>
           <!-- Iscrizione utenti -->
           <div class="row " id="inserimento_utente">
             <h6 class="mb-4 text-uppercase">Inserimento nuovo utente</h6>
@@ -179,8 +184,10 @@ if (isset($_POST['elimina_insegnamento'])) {
               $tipo = $_POST['inserimento_utente'];
               if ($tipo == 'inserimento_studente') {
             ?>
-                <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                <form class="border-top border-bottom py-4 mt-4" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
                   <input type="hidden" name="inserimento_utente" value="inserimento_studente">
+                  <h6 class="mb-2 text-uppercase">Inserimento studente</h6>
+                  <h6 class="text-secondary">Completare i campi per inserire un nuovo studente</h6>
                   <div class="row mt-4">
                     <div class="col-md-6">
                       <label for="nome" class="form-label">Nome</label>
@@ -214,8 +221,10 @@ if (isset($_POST['elimina_insegnamento'])) {
               <?php
               } elseif ($tipo == 'inserimento_docente') {
               ?>
-                <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                <form class="border-top border-bottom py-4 mt-4" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
                   <input type="hidden" name="inserimento_utente" value="inserimento_docente">
+                  <h6 class="mb-2 text-uppercase">Inserimento docente</h6>
+                  <h6 class="text-secondary">Completare i campi per inserire un nuovo docente</h6>
                   <div class="row mt-4">
                     <div class="col-md-6">
                       <label for="nome" class="form-label">Nome</label>
@@ -278,7 +287,7 @@ if (isset($_POST['elimina_insegnamento'])) {
             if (isset($_POST['cerca_utente']) || isset($_POST['carriera_valida']) || isset($_POST['carriera_completa'])) {
               if (isset($_SESSION['info_utente'])) {
                 $id_utente = $_SESSION['info_utente']['id'];
-            ?> <div class="card p-4 my-3">
+            ?> <div class="card p-4 my-3" id="info_utente">
                   <h5 class="mb-4 text-uppercase">Informazione sull'utente </h5>
                   <div class="d-flex mb-1">
                     <label class="fs-6"><strong>Nome: </strong><?php echo ($_SESSION['info_utente']['nome']); ?></label>
@@ -305,11 +314,11 @@ if (isset($_POST['elimina_insegnamento'])) {
                       <label class="fs-6 "><strong>Anno di iscrizione: </strong><?php echo ($_SESSION['info_utente']['anno_iscrizione']); ?></label>
                     </div>
                     <div class="d-flex my-2">
-                      <form class="" method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#inserimento_utente" ?>">
+                      <form class="" method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#info_utente" ?>">
                         <input type="hidden" name="carriera_valida" value="carriera_valida">
                         <button type="submit" class="btn custom-btn">Carriera valida</button>
                       </form>
-                      <form class="mx-3" method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#inserimento_utente" ?>">
+                      <form class="mx-3" method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#info_utente" ?>">
                         <input type="hidden" name="carriera_completa" value="carriera_completa">
                         <button type="submit" class="btn custom-btn">Carriera completa</button>
                       </form>
@@ -322,7 +331,7 @@ if (isset($_POST['elimina_insegnamento'])) {
                     }
                     if (isset($voti)) {
                     ?>
-                      <table class="table">
+                      <table class="table" id="carriera">
                         <thead>
                           <tr>
                             <th scope="col">C.Esame</th>
@@ -356,6 +365,30 @@ if (isset($_POST['elimina_insegnamento'])) {
                     <div class="d-flex mb-1">
                       <label class="fs-6 "><strong>Specializzazione: </strong><?php echo ($info_utente['specializzazione']); ?></label>
                     </div>
+                    <?php if (count($insegnamenti_docente) > 0) {
+                    ?>
+                      <div class="d-flex mb-1">
+                        <label class="fs-6 "><strong>Insegnamenti: </strong>
+
+                          <?php
+                          foreach ($insegnamenti_docente as $insegnamento) {
+                            echo $insegnamento['codice'] . " ";
+                          ?>
+                          <?php } ?>
+                      </div>
+                    <?php
+                    } else {
+                    ?>
+                      <div class="d-flex mb-1">
+                        <label class="fs-6 "><strong>Nessun insegnamento assegnato</strong></label>
+                      </div>
+                    <?php
+                    }
+                    ?>
+                    </label>
+
+
+
                     <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#inserimento_utente" ?>">
                       <input type="hidden" name="elimina_docente" value="<?php echo $_SESSION['info_utente']['id'] ?>">
                       <button type="submit" class="btn btn-danger my-2">Elimina utente</button>
@@ -395,7 +428,7 @@ if (isset($_POST['elimina_insegnamento'])) {
           </div>
         </div>
         <div class="row mx-5 my-4 p-3 shadow rounded" id="sezione_corsi">
-          <h3 class="mb-4 text-uppercase">Sezione Corsi-Insegnamenti</h3>
+          <h3 class="mb-4 text-uppercase">Gestione Corsi-Insegnamenti</h3>
           <!-- INSERIMENTO CORSI/INSEGNAMENTI -->
           <div class="row" id="inserimento_corso">
             <h6 class="mb-4 text-uppercase">Inserimento nuovo corso</h6>
@@ -412,7 +445,9 @@ if (isset($_POST['elimina_insegnamento'])) {
               $tipo = $_POST['inserimento'];
               if ($tipo == 'inserimento_corso') {
             ?>
-                <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                <form class="border-top border-bottom py-4 mt-4" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                  <h6 class="mb-2 text-uppercase">Inserimento corso</h6>
+                  <h6 class="text-secondary">Completare i campi per inserire un nuovo corso</h6>
                   <input type="hidden" name="inserimento" value="inserimento_corso">
                   <div class="row mt-4">
                     <div class="col-md-6">
@@ -436,15 +471,17 @@ if (isset($_POST['elimina_insegnamento'])) {
                   </div>
                   <div class="col-md-6">
                     <label class="form-label">Descrizione</label>
-                    <input type="text" class="form-control mb-3" placeholder="Una breve descrizione del corso" name="descrizione" />
+                    <textarea type="text" class="form-control mb-3" placeholder="Una breve descrizione del corso" name="descrizione"> </textarea>
                   </div>
                   <button type="submit" class="btn custom-btn mt-4">Conferma</button>
                 </form>
               <?php
               } elseif ($tipo == 'inserimento_insegnamento') {
               ?>
-                <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                <form class="border-top border-bottom py-4 mt-4" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
                   <input type="hidden" name="inserimento" value="inserimento_insegnamento">
+                  <h6 class="mb-2 text-uppercase">Inserimento insegnamento</h6>
+                  <h6 class="text-secondary">Completare i campi per inserire un nuovo insegnamento</h6>
                   <div class="row mt-4">
                     <div class="col-md-6">
                       <label class="form-label">Codice</label>
@@ -584,7 +621,7 @@ if (isset($_POST['elimina_insegnamento'])) {
           </div>
           <!-- Gestione Insegnamenti -->
           <div class="row" id="gestione_insegnamenti">
-            <h6 class="mb-4 text-uppercase">Gestione insegnamenti</h6>
+            <h6 class="mb-4 text-uppercase">Ricerca insegnamenti</h6>
             <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . '#gestione_insegnamenti'; ?>">
               <div class="col-md-6">
                 <label class="form-label">Codice dell'insegnamento </label>
