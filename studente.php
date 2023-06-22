@@ -102,7 +102,7 @@ if ($_SESSION['tipo_utente'] != 'studente') {
           $insegnamenti = getInsegnamentiCorso($info['codice_corso']);
           if (!empty($insegnamenti)) {
           ?>
-            <table class="table">
+            <table class="table align-middle">
               <thead>
                 <tr>
                   <th scope="col">Codice</th>
@@ -116,7 +116,7 @@ if ($_SESSION['tipo_utente'] != 'studente') {
                   <tr>
                     <th scope="row"><?php echo $insegnamento['codice']; ?></th>
                     <td><?php echo $insegnamento['nome']; ?></td>
-                    <td><?php echo $insegnamento['anno']; ?></td>
+                    <td>&nbsp&nbsp&nbsp<?php echo $insegnamento['anno']; ?></td>
                     <td><?php echo $insegnamento['nome_docente'] . " " . $insegnamento['cognome_docente']; ?></td>
                   </tr>
                 <?php } ?>
@@ -127,7 +127,7 @@ if ($_SESSION['tipo_utente'] != 'studente') {
           <?php } ?>
         </div>
         <!-- Carriera -->
-        <div class="row mx-5 my-4 p-3 shadow rounded" id="carriera">
+        <div class="row mx-5 my-4 p-3 shadow rounded table-responsive" id="carriera">
           <h6 class="mb-4 text-uppercase">Carriera dello studente</h6>
           <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -144,7 +144,7 @@ if ($_SESSION['tipo_utente'] != 'studente') {
               }
               if (!empty($carriera_valida)) {
               ?>
-                <table class="table">
+                <table class="table align-middle">
                   <thead>
                     <tr>
                       <th scope="col">C.Esame</th>
@@ -158,8 +158,8 @@ if ($_SESSION['tipo_utente'] != 'studente') {
                       <tr>
                         <th scope="row"><?php echo $voto['codice']; ?></th>
                         <td><?php echo $voto['nome']; ?></td>
-                        <td><?php echo $voto['voto']; ?></td>
-                        <td class="d-none d-sm-table-cell"><?php echo $voto['data_verbalizzazione']; ?></td>
+                        <td>&nbsp&nbsp&nbsp&nbsp&nbsp<?php echo $voto['voto']; ?></td>
+                        <td><?php echo $voto['data_verbalizzazione']; ?></td>
                       </tr>
                     <?php } ?>
                   </tbody>
@@ -177,13 +177,13 @@ if ($_SESSION['tipo_utente'] != 'studente') {
               }
               if (!empty($carriera_completa)) {
               ?>
-                <table class="table">
+                <table class="table align-middle">
                   <thead>
                     <tr>
                       <th scope="col">C.Esame</th>
                       <th scope="col">Esame</th>
                       <th scope="col">Valutazione</th>
-                      <th class="d-none d-sm-table-cell" scope="col">Data verbalizzazione</th>
+                      <th scope="col">Data verbalizzazione</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -206,13 +206,13 @@ if ($_SESSION['tipo_utente'] != 'studente') {
         </div>
 
         <!-- Iscrizione agli esami  -->
-        <div class="row mx-5 my-4 p-3 shadow rounded" id="esami">
+        <div class="row mx-5 my-4 p-3 shadow rounded table-responsive" id="esami">
           <h6 class="mb-4 text-uppercase">Esami in programma</h6>
           <?php
           $iscrizioni = getIscrizioni($_SESSION['id']);
           if (!empty($iscrizioni)) {
           ?>
-            <table class="table">
+            <table class="table table-hover align-middle table-borderless">
               <thead>
                 <tr>
                   <th scope="col">C.Esame</th>

@@ -285,7 +285,7 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
             if (isset($_POST['cerca_utente']) || isset($_POST['carriera_valida']) || isset($_POST['carriera_completa']) || isset($_POST['carriera_completa_storico']) || isset($_POST['carriera_valida_storico'])) {
               if (isset($_SESSION['info_utente'])) {
                 $id_utente = $_SESSION['info_utente']['id'];
-            ?> <div class="card p-4 my-3" id="info_utente">
+            ?> <div class="card p-4 my-3 table-responsive" id="info_utente">
                   <h5 class="mb-4 text-uppercase">Informazione sull'utente </h5>
                   <div class="d-flex mb-1">
                     <label class="fs-6"><strong>Nome: </strong><?php echo ($_SESSION['info_utente']['nome']); ?></label>
@@ -363,13 +363,13 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
 
                     if (count($voti) > 0) {
                     ?>
-                      <table class="table" id="carriera">
+                      <table class="table align-middle " id="carriera">
                         <thead>
                           <tr>
                             <th scope="col">C.Esame</th>
                             <th scope="col">Esame</th>
                             <th scope="col">Valutazione</th>
-                            <th class="d-none d-sm-table-cell" scope="col">Data verbalizzazione</th>
+                            <th scope="col">Data verbalizzazione</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -377,8 +377,8 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
                             <tr>
                               <th scope="row"><?php echo $voto['codice']; ?></th>
                               <td><?php echo $voto['nome']; ?></td>
-                              <td><?php echo $voto['voto']; ?></td>
-                              <td class="d-none d-sm-table-cell"><?php echo $voto['data_verbalizzazione']; ?></td>
+                              <td>&nbsp&nbsp&nbsp&nbsp<?php echo $voto['voto']; ?></td>
+                              <td><?php echo $voto['data_verbalizzazione']; ?></td>
                             </tr>
                           <?php } ?>
                         </tbody>
@@ -435,7 +435,7 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
                 </div>
               <?php
               } else {
-              ?><div class="alert alert-danger">Utente non trovato</div>
+              ?><div class="alert alert-danger mt-3">Utente non trovato</div>
               <?php
               }
             }
@@ -586,7 +586,7 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
             </form>
             <?php
             if (isset($_POST['cerca_corso'], $info_corso)) {
-            ?> <div class="card p-4 my-3">
+            ?> <div class="card p-4 my-3 table-responsive">
                 <h5 class="mb-4 text-uppercase">Informazioni sul corso </h5>
                 <div class="d-flex mb-1">
                   <label class="fs-6"><strong>Nome: </strong><?php echo $info_corso['nome']; ?></label>
@@ -609,7 +609,7 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
                     $insegnamenti = getInsegnamentiCorso($info_corso['codice']);
                     if (!empty($insegnamenti)) {
                     ?>
-                      <table class="table">
+                      <table class="table align-middle">
                         <thead>
                           <tr>
                             <th scope="col">Codice</th>
@@ -623,7 +623,7 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
                             <tr>
                               <th scope="row"><?php echo $insegnamento['codice']; ?></th>
                               <td><?php echo $insegnamento['nome']; ?></td>
-                              <td><?php echo $insegnamento['anno']; ?></td>
+                              <td>&nbsp &nbsp<?php echo $insegnamento['anno']; ?></td>
                               <td><?php echo $insegnamento['nome_docente'] . " " . $insegnamento['cognome_docente']; ?></td>
                             </tr>
                           <?php } ?>
@@ -640,7 +640,7 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
               </div>
             <?php
             } elseif (isset($_POST['cerca_corso'])) {
-            ?><div class="alert alert-danger">Corso non trovato</div>
+            ?><div class="alert alert-danger mt-3">Corso non trovato</div>
             <?php
             }
             if (isset($_POST['elimina_corso']) && $rimozione == "") {
@@ -693,7 +693,7 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
               </div>
             <?php
             } elseif (isset($_POST['cerca_insegnamento'])) {
-            ?><div class="alert alert-danger">Insegnamento non trovato</div>
+            ?><div class="alert alert-danger mt-3">Insegnamento non trovato</div>
             <?php
             }
             if (isset($_POST['elimina_insegnamento']) && $rimozione == "") {

@@ -122,7 +122,7 @@ if ($_SESSION['tipo_utente'] != 'docente') {
                 <?php
                 if (!empty($appelli)) {
                 ?>
-                  <table class="table mx-2">
+                  <table class="table mx-2 table-borderless align-middle table-hover table-responsive">
                     <thead>
                       <tr>
                         <th scope="col">Nome esame</th>

@@ -818,7 +818,7 @@ function getIscrizioni($id_studente)
 function getEsamiCorso($corso)
 {
     $db = open_pg_connection();
-    $sql = "SELECT e.codice, e.nome, a.id as id_appello, a.data
+    $sql = "SELECT e.codice, e.nome, a.id as id_appello, TO_CHAR(a.data, 'dd/mm/yyyy') as data
     FROM portale_uni.insegnamento i inner join portale_uni.esame e
     on e.insegnamento = i.codice AND e.corso_studi = i.corso_studi
     inner join portale_uni.appello a

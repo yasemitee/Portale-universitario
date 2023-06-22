@@ -57,21 +57,21 @@ if (isset($_POST['codice_esame']) && isset($_POST['id_appello'])) {
             include_once('lib/sidebar-studente.php');
             ?>
             <!-- Contenuto di destra -->
-            <div id="content" class="col py-3  offset-1 offset-md-2 offset-sm-3">
-                <div class="row mx-5 my-4 p-3 shadow rounded">
+            <div id="content" class="col py-3 offset-1 offset-md-2 offset-sm-3">
+                <div class="row mx-5 my-4 p-3 shadow rounded table-responsive">
                     <h5 class="mb-4 text-uppercase">Iscrizione a un nuovo esame</h5>
                     <?php
                     $esami = getEsamiCorso($info['codice_corso']);
                     if (!empty($esami)) {
                     ?>
-                        <table class="table">
+                        <table class="table table-hover align-middle">
                             <thead>
                                 <tr>
                                     <th scope="col">Codice</th>
                                     <th scope="col">Nome</th>
-                                    <th scope="col" class="d-none d-sm-table-cell">Data Appello</th>
+                                    <th scope="col">Data Appello</th>
                                     <th scope="col">Stato</th>
-                                    <th scope="col" class="d-none d-sm-table-cell"></th>
+                                    <th scope="col"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -79,32 +79,28 @@ if (isset($_POST['codice_esame']) && isset($_POST['id_appello'])) {
                                     <tr>
                                         <th scope="row"><?php echo $esame['codice']; ?></th>
                                         <td><?php echo $esame['nome']; ?></td>
-                                        <td class="d-none d-sm-table-cell"><?php echo $esame['data']; ?></td>
+                                        <td><?php echo $esame['data']; ?></td>
                                         <?php
                                         if (array_key_exists($esame['codice'], $voti)) {
                                         ?>
-                                            <td class="d-none d-sm-table-cell">
-                                                <div class="">
-                                                    <p class="text-success">Superato</p>
-
-                                                </div>
+                                            <td class="text-success">
+                                                Superato
                                             </td>
                                         <?php
                                         } else {
                                         ?>
-                                            <td class="d-none d-sm-table-cell">
-                                                <p class="text-danger">Da svolgere</p>
-                                            </td>
-                                        <?php
+                                            <td class="text-danger">
+                                                Da svolgere
+                                            <?php
                                         }
-                                        ?>
-                                        <td>
-                                            <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . '#alert'; ?>">
-                                                <input type="hidden" name="codice_esame" value="<?php echo $esame['codice']; ?>">
-                                                <input type="hidden" name="id_appello" value="<?php echo $esame['id_appello']; ?>">
-                                                <button type="submit" class="btn btn-light ">Iscriviti</button>
-                                            </form>
-                                        </td>
+                                            ?>
+                                            <td>
+                                                <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . '#alert'; ?>">
+                                                    <input type="hidden" name="codice_esame" value="<?php echo $esame['codice']; ?>">
+                                                    <input type="hidden" name="id_appello" value="<?php echo $esame['id_appello']; ?>">
+                                                    <button type="submit" class="btn btn-light ">Iscriviti</button>
+                                                </form>
+                                            </td>
                                     </tr>
                                 <?php } ?>
                             </tbody>
