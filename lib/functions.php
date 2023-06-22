@@ -7,6 +7,10 @@ define("mydb", "portale_uni");
 
 <?php
 
+/* 
+    INTERAZIONE CON IL DB
+*/
+
 function open_pg_connection()
 {
 
@@ -15,6 +19,15 @@ function open_pg_connection()
     return pg_connect($connection);
 }
 
+function close_pg_connection($db)
+{
+
+    return pg_close($db);
+}
+
+/**
+ * LOGIN E CAMBIO PASSWORD
+ */
 
 function login($email, $password)
 {
@@ -80,6 +93,49 @@ function login($email, $password)
 
     return array($logged, $header);
 }
+
+function cambiaPassword($email, $tipo_utente, $vecchia_password, $nuova_password)
+{
+    $db = open_pg_connection();
+
+    switch ($tipo_utente) {
+        case 'studente':
+            $sql = "UPDATE portale_uni.studente
+                    SET password = $3 WHERE email = $1 AND password = $2;";
+            break;
+        case 'docente':
+            $sql = "UPDATE portale_uni.docente
+                        SET password = $3 WHERE email = $1 AND password = $2;";
+            break;
+        case 'segretaria':
+            $sql = "UPDATE portale_uni.segreteria
+                            SET password = $3 WHERE email = $1 AND password = $2;";
+            break;
+    }
+
+
+    $params = array(
+        $email,
+        $vecchia_password,
+        $nuova_password
+    );
+
+    $result = pg_prepare($db, "change_password", $sql);
+    $result = pg_execute($db, "change_password", $params);
+
+    $err = '';
+
+    if (pg_affected_rows($result) === 0) {
+        $err = "Non è stato possibile cambiare la password, verificare i dati inseriti e riprovare.";
+    }
+
+    close_pg_connection($db);
+    return $err;
+}
+
+/**
+ * REGISTRAZIONE UTENTI
+ */
 
 function registraStudente($nome, $cognome, $email, $password, $matricola, $corso_studi)
 {
@@ -161,6 +217,10 @@ function registraDocente($nome, $cognome, $email, $password, $specializzazione)
     close_pg_connection($db);
     return $result !== false;
 }
+
+/**
+ * INSERIMENTO CORSI/INSEGNAMENTI
+ */
 
 function inserisciCorso($codice, $nome, $descrizione, $facoltà, $durata)
 {
@@ -286,182 +346,9 @@ function inserisciInsegnamento($codice, $nome, $corso_studi, $descrizione, $anno
     return $result !== false;
 }
 
-
-function close_pg_connection($db)
-{
-
-    return pg_close($db);
-}
-
-function cambiaPassword($email, $tipo_utente, $vecchia_password, $nuova_password)
-{
-    $db = open_pg_connection();
-
-    switch ($tipo_utente) {
-        case 'studente':
-            $sql = "UPDATE portale_uni.studente
-                    SET password = $3 WHERE email = $1 AND password = $2;";
-            break;
-        case 'docente':
-            $sql = "UPDATE portale_uni.docente
-                        SET password = $3 WHERE email = $1 AND password = $2;";
-            break;
-        case 'segretaria':
-            $sql = "UPDATE portale_uni.segreteria
-                            SET password = $3 WHERE email = $1 AND password = $2;";
-            break;
-    }
-
-
-    $params = array(
-        $email,
-        $vecchia_password,
-        $nuova_password
-    );
-
-    $result = pg_prepare($db, "change_password", $sql);
-    $result = pg_execute($db, "change_password", $params);
-
-    $err = '';
-
-    if (pg_affected_rows($result) === 0) {
-        $err = "Non è stato possibile cambiare la password, verificare i dati inseriti e riprovare.";
-    }
-
-
-    return $err;
-
-    close_pg_connection($db);
-}
-
-/*
-* Prende le info di uno studente e le resituisce in un array
-*/
-function getInfoStudente($email)
-{
-    $db = open_pg_connection();
-    $sql = "SELECT s.id,s.nome, s.cognome, s.matricola, s.email, c.codice as codice_corso, c.nome as nome_corso, c.durata, s.anno_frequenza, s.anno_iscrizione  
-    FROM portale_uni.studente s inner join portale_uni.corso c on c.codice = s.corso_studi 
-    WHERE s.email  = $1;";
-    $params = array(
-        $email
-    );
-
-    $result = pg_prepare($db, "get_info_studente", $sql);
-    $result = pg_execute($db, "get_info_studente", $params);
-
-    if ($row = pg_fetch_assoc($result)) {
-        return $row;
-    }
-
-    close_pg_connection($db);
-}
-
-function getInfoDocente($email)
-{
-    $db = open_pg_connection();
-    $sql = "SELECT d.id,d.nome, d.cognome, d.email, d.specializzazione
-    FROM portale_uni.docente d
-    WHERE d.email  = $1;";
-    $params = array(
-        $email
-    );
-
-    $result = pg_prepare($db, "get_info_docente", $sql);
-    $result = pg_execute($db, "get_info_docente", $params);
-
-    if ($row = pg_fetch_assoc($result)) {
-        return $row;
-    }
-
-    close_pg_connection($db);
-}
-
-function getInfoSegretario($email)
-{
-    $db = open_pg_connection();
-    $sql = "SELECT s.nome, s.cognome, email
-    FROM portale_uni.segreteria s
-    WHERE s.email  = $1;";
-    $params = array(
-        $email
-    );
-
-    $result = pg_prepare($db, "get_info_segretaria", $sql);
-    $result = pg_execute($db, "get_info_segretaria", $params);
-
-    if ($row = pg_fetch_assoc($result)) {
-        return $row;
-    }
-
-    close_pg_connection($db);
-}
-
-function getInfoCorso($codice_corso)
-{
-    $db = open_pg_connection();
-
-    $sql = "SELECT *
-    from portale_uni.corso
-    where codice = $1";
-    $params = array(
-        $codice_corso
-    );
-
-    $result = pg_prepare($db, "get_info_corso", $sql);
-    $result = pg_execute($db, "get_info_corso", $params);
-
-    if ($row = pg_fetch_assoc($result)) {
-        close_pg_connection($db);
-        return $row;
-    }
-}
-
-function getInfoInsegnamento($codice_insegnamento)
-{
-    $db = open_pg_connection();
-
-    $sql = "SELECT i.*, d.nome as nome_docente, d.cognome as cognome_docente
-    from portale_uni.insegnamento i inner join portale_uni.docente d
-    on i.docente_responsabile = d.id
-    where i.codice = $1";
-    $params = array(
-        $codice_insegnamento
-    );
-
-    $result = pg_prepare($db, "get_info_insegnamento", $sql);
-    $result = pg_execute($db, "get_info_insegnamento", $params);
-
-    if ($row = pg_fetch_assoc($result)) {
-        close_pg_connection($db);
-        return $row;
-    }
-}
-
-function getInsegnamentiCorso($corso)
-{
-    $db = open_pg_connection();
-
-    $sql = "SELECT i.codice, i.nome, i.anno, i.descrizione, d.nome as nome_docente, d.cognome as cognome_docente
-    FROM portale_uni.insegnamento i INNER JOIN portale_uni.docente d 
-    ON i.docente_responsabile = d.id 
-    WHERE i.corso_studi  = $1 
-    ORDER BY i.anno;";
-    $params = array(
-        $corso
-    );
-
-    $result = pg_prepare($db, "get_insegnamenti_corso", $sql);
-    $result = pg_execute($db, "get_insegnamenti_corso", $params);
-
-    $insegnamenti = array();
-    while ($row = pg_fetch_assoc($result)) {
-        $insegnamenti[$row['codice']] = $row;
-    }
-    return $insegnamenti;
-    close_pg_connection($db);
-}
-
+/**
+ * RIMOZIONE UTENTI/CORSI/INSEGNAMENTI
+ */
 function removeStudente($id_studente)
 {
     $err = '';
@@ -481,7 +368,6 @@ function removeStudente($id_studente)
     }
 
     close_pg_connection($db);
-
     return $err;
 }
 
@@ -511,7 +397,6 @@ function removeDocente($id_docente)
     }
 
     close_pg_connection($db);
-
     return $err;
 }
 
@@ -569,6 +454,154 @@ function removeInsegnamento($codice_insegnamento)
 
     return $err;
 }
+
+
+/**
+ * GETTERS DELLE INFORMAZIONI ASSOCIATE AGLI UTENTI
+ */
+
+function getInfoStudente($email)
+{
+    $db = open_pg_connection();
+    $sql = "SELECT s.id,s.nome, s.cognome, s.matricola, s.email, c.codice as codice_corso, c.nome as nome_corso, c.durata, s.anno_frequenza, s.anno_iscrizione  
+    FROM portale_uni.studente s inner join portale_uni.corso c on c.codice = s.corso_studi 
+    WHERE s.email  = $1;";
+    $params = array(
+        $email
+    );
+
+    $result = pg_prepare($db, "get_info_studente", $sql);
+    $result = pg_execute($db, "get_info_studente", $params);
+
+    if ($row = pg_fetch_assoc($result)) {
+        close_pg_connection($db);
+        return $row;
+    } else {
+        $sql = "SELECT s.id,s.nome, s.cognome, s.matricola, s.email, c.codice as codice_corso, c.nome as nome_corso, c.durata, s.anno_iscrizione  
+        FROM portale_uni.storico_studenti s inner join portale_uni.corso c on c.codice = s.corso_studi 
+        WHERE s.email  = $1;";
+        $params = array(
+            $email
+        );
+
+        $result = pg_prepare($db, "get_info_studente_storico", $sql);
+        $result = pg_execute($db, "get_info_studente_storico", $params);
+        if ($row = pg_fetch_assoc($result)) {
+            close_pg_connection($db);
+            return $row;
+        }
+    }
+}
+
+function getInfoDocente($email)
+{
+    $db = open_pg_connection();
+    $sql = "SELECT d.id,d.nome, d.cognome, d.email, d.specializzazione
+    FROM portale_uni.docente d
+    WHERE d.email  = $1;";
+    $params = array(
+        $email
+    );
+
+    $result = pg_prepare($db, "get_info_docente", $sql);
+    $result = pg_execute($db, "get_info_docente", $params);
+
+    if ($row = pg_fetch_assoc($result)) {
+        close_pg_connection($db);
+        return $row;
+    }
+    close_pg_connection($db);
+}
+
+function getInfoSegretario($email)
+{
+    $db = open_pg_connection();
+    $sql = "SELECT s.nome, s.cognome, email
+    FROM portale_uni.segreteria s
+    WHERE s.email  = $1;";
+    $params = array(
+        $email
+    );
+
+    $result = pg_prepare($db, "get_info_segretaria", $sql);
+    $result = pg_execute($db, "get_info_segretaria", $params);
+
+    if ($row = pg_fetch_assoc($result)) {
+        close_pg_connection($db);
+        return $row;
+    }
+
+    close_pg_connection($db);
+}
+
+function getInfoCorso($codice_corso)
+{
+    $db = open_pg_connection();
+
+    $sql = "SELECT *
+    from portale_uni.corso
+    where codice = $1";
+    $params = array(
+        $codice_corso
+    );
+
+    $result = pg_prepare($db, "get_info_corso", $sql);
+    $result = pg_execute($db, "get_info_corso", $params);
+
+    if ($row = pg_fetch_assoc($result)) {
+        close_pg_connection($db);
+        return $row;
+    }
+    close_pg_connection($db);
+}
+
+function getInfoInsegnamento($codice_insegnamento)
+{
+    $db = open_pg_connection();
+
+    $sql = "SELECT i.*, d.nome as nome_docente, d.cognome as cognome_docente
+    from portale_uni.insegnamento i inner join portale_uni.docente d
+    on i.docente_responsabile = d.id
+    where i.codice = $1";
+    $params = array(
+        $codice_insegnamento
+    );
+
+    $result = pg_prepare($db, "get_info_insegnamento", $sql);
+    $result = pg_execute($db, "get_info_insegnamento", $params);
+
+    if ($row = pg_fetch_assoc($result)) {
+        close_pg_connection($db);
+        return $row;
+    }
+    close_pg_connection($db);
+}
+
+function getInsegnamentiCorso($corso)
+{
+    $db = open_pg_connection();
+
+    $sql = "SELECT i.codice, i.nome, i.anno, i.descrizione, d.nome as nome_docente, d.cognome as cognome_docente
+    FROM portale_uni.insegnamento i INNER JOIN portale_uni.docente d 
+    ON i.docente_responsabile = d.id 
+    WHERE i.corso_studi  = $1 
+    ORDER BY i.anno;";
+    $params = array(
+        $corso
+    );
+
+    $result = pg_prepare($db, "get_insegnamenti_corso", $sql);
+    $result = pg_execute($db, "get_insegnamenti_corso", $params);
+
+    $insegnamenti = array();
+    while ($row = pg_fetch_assoc($result)) {
+        $insegnamenti[$row['codice']] = $row;
+    }
+    close_pg_connection($db);
+    return $insegnamenti;
+}
+
+
 function getInsegnamentiDocete($id_docente)
 {
     $db = open_pg_connection();
@@ -635,16 +668,41 @@ function getCarrieraCompleta($id)
         $voti[$i] = $row;
         $i++;
     }
-    return $voti;
     close_pg_connection($db);
+    return $voti;
+}
+
+function getCarrieraCompletaStorico($id)
+{
+    $db = open_pg_connection();
+    $sql = "SELECT c.esame as codice, e.nome, c.voto, TO_CHAR(c.data_verbalizzazione, 'dd/mm/yyyy') as data_verbalizzazione 
+    from portale_uni.storico_carriere c inner join portale_uni.esame e 
+    on c.esame = e.codice 
+    where c.studente = $1
+    order by data_verbalizzazione;";
+    $params = array(
+        $id
+    );
+
+    $result = pg_prepare($db, "get_carriera_completa_storico", $sql);
+    $result = pg_execute($db, "get_carriera_completa_storico", $params);
+
+    //è diverso da getCarrieraValid perché sennò mi elimina delle chiavi (non possono esserci duplicati)
+    $voti = array();
+    $i = 0;
+    while ($row = pg_fetch_assoc($result)) {
+        $voti[$i] = $row;
+        $i++;
+    }
+    close_pg_connection($db);
+    return $voti;
 }
 
 function getCarrieraValida($id)
 {
     $db = open_pg_connection();
-    $sql = "SELECT c.esame as codice, e.nome, c.voto, TO_CHAR(c.data_verbalizzazione, 'dd/mm/yyyy') as data_verbalizzazione 
-    from portale_uni.carriera c inner join portale_uni.esame e 
-    on c.esame = e.codice 
+    $sql = "SELECT c.esame as codice, c.nome, c.voto, TO_CHAR(c.data_verbalizzazione, 'dd/mm/yyyy') as data_verbalizzazione 
+    from portale_uni.ultimi_esami c
     where c.studente = $1 AND c.voto >= 18
     order by data_verbalizzazione;";
     $params = array(
@@ -658,9 +716,33 @@ function getCarrieraValida($id)
     while ($row = pg_fetch_assoc($result)) {
         $voti[$row['codice']] = $row;
     }
-    return $voti;
     close_pg_connection($db);
+    return $voti;
 }
+
+function getCarrieraValidaStorico($id)
+{
+    $db = open_pg_connection();
+    $sql = "SELECT c.esame as codice, c.nome, c.voto, TO_CHAR(c.data_verbalizzazione, 'dd/mm/yyyy') as data_verbalizzazione 
+    from portale_uni.ultimi_esami_storico c
+    where c.studente = $1 AND c.voto >= 18
+    order by data_verbalizzazione;";
+    $params = array(
+        $id
+    );
+
+    $result = pg_prepare($db, "get_carriera_valida_storico", $sql);
+    $result = pg_execute($db, "get_carriera_valida_storico", $params);
+
+    $voti = array();
+    while ($row = pg_fetch_assoc($result)) {
+        $voti[$row['codice']] = $row;
+    }
+    close_pg_connection($db);
+    return $voti;
+}
+
+
 
 function getCorsi()
 {
@@ -679,8 +761,8 @@ function getCorsi()
     while ($row = pg_fetch_assoc($result)) {
         $corsi[$row['codice']] = $row;
     }
-    return $corsi;
     close_pg_connection($db);
+    return $corsi;
 }
 
 function getIscrizioni($id_studente)
@@ -707,8 +789,8 @@ function getIscrizioni($id_studente)
     while ($row = pg_fetch_assoc($result)) {
         $iscrizioni[$row['id']] = $row;
     }
-    return $iscrizioni;
     close_pg_connection($db);
+    return $iscrizioni;
 }
 
 function getEsamiCorso($corso)
@@ -737,8 +819,8 @@ function getEsamiCorso($corso)
     while ($row = pg_fetch_assoc($result)) {
         $esami[$i++] = $row;
     }
-    return $esami;
     close_pg_connection($db);
+    return $esami;
 }
 
 function getEsameByInsegnamento($codice_insegnamento)
@@ -754,14 +836,13 @@ function getEsameByInsegnamento($codice_insegnamento)
     $result = pg_prepare($db, "get_esame_by_insegnamento", $sql);
     $result = pg_execute($db, "get_esame_by_insegnamento", $params);
 
-    $codice_esame = '';
-
-    if ($row = pg_fetch_assoc($result)) {
-        $codice_esame = $row['codice'];
+    $i = 0;
+    $esami = array();
+    while ($row = pg_fetch_assoc($result)) {
+        $esami[$i++] = $row['codice'];
     }
-
-    return $codice_esame;
     close_pg_connection($db);
+    return $esami;
 }
 
 function getAppelliEsame($codice_esame)
@@ -786,6 +867,10 @@ function getAppelliEsame($codice_esame)
     return $appelli;
 }
 
+/**
+ * GESTIONE APPELLI (INSERIMENTO VOTI, APPELLI E GESTIONE)
+ */
+
 function inserimentoAppello($codice_esame, $data_appello)
 {
     $db = open_pg_connection();
@@ -802,7 +887,7 @@ function inserimentoAppello($codice_esame, $data_appello)
     if (preg_match('/ERROR:\s*(.*)\s*CONTEXT:/s', $err, $matches)) {
         $err = $matches[1];
     }
-
+    close_pg_connection($db);
     return $err;
 }
 
@@ -811,8 +896,7 @@ function registraVoto($matricola, $codice_esame, $valutazione, $id_appello)
     $db = open_pg_connection();
     $err = "";
 
-
-    // Recupera l'id dello studente
+    // Recupero dell'id dello studente
     $sql = "SELECT id
     from portale_uni.studente
     where matricola = $1;";
@@ -824,7 +908,7 @@ function registraVoto($matricola, $codice_esame, $valutazione, $id_appello)
     if ($row = pg_fetch_assoc($result)) {
         $id_studente = $row['id'];
 
-        // Verifica se lo studente si è iscritto all'esame
+        //Controllo per vedere se lo studente si è iscritto all'esame
         $sql = "SELECT i.id
         from portale_uni.iscrizione i 
         where i.id_studente = $1 AND i.appello = $2";
@@ -855,6 +939,7 @@ function registraVoto($matricola, $codice_esame, $valutazione, $id_appello)
     } else {
         $err = "Studente non esistente";
     }
+    close_pg_connection($db);
     return $err;
 }
 
@@ -882,7 +967,6 @@ function iscriviEsame($id_studente, $codice_esame, $codice_corso, $id_appello, $
     }
 
     close_pg_connection($db);
-
     return $err;
 }
 
@@ -905,7 +989,6 @@ function removeIscrizione($id_iscrizione)
     }
 
     close_pg_connection($db);
-
     return $err;
 }
 
@@ -928,7 +1011,6 @@ function removeAppello($id_appello)
     }
 
     close_pg_connection($db);
-
     return $err;
 }
 

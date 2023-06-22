@@ -1,10 +1,11 @@
 <?php
-ini_set("display_errors", "Off");
+ini_set("display_errors", "On");
 ini_set("error_reporting", E_ALL);
 include_once('lib/functions.php');
 
 // inizio della sessione: PRIMA di qualunque output html!
 session_start();
+
 
 // imposta la variabile $logged se esiste una sessione aperta
 if (isset($_SESSION['user'])) {
@@ -108,67 +109,69 @@ if ($_SESSION['tipo_utente'] != 'docente') {
           <h4 class="mb-4 text-uppercase">Calendario appelli</h4>
           <?php
           foreach ($insegnamenti as $insegnamento) {
-            $codice_esame = getEsameByInsegnamento($insegnamento['codice']);
-            $appelli = getAppelliEsame($codice_esame);
+
+            $esami = getEsameByInsegnamento($insegnamento['codice']);
+            foreach ($esami as $esame) {
+              $appelli = getAppelliEsame($esame);
           ?>
+              <div class=" my-4 p-3" id="esami">
 
-            <div class=" my-4 p-3" id="esami">
+                <h6 class="mb-4 text-uppercase">Appelli di <strong><?php echo $insegnamento['nome'] . " " . $esame ?></strong>
+                </h6>
 
-              <h6 class="mb-4 text-uppercase">Appelli di <strong><?php echo $insegnamento['nome'] ?></strong>
-              </h6>
-
-              <?php
-              if (!empty($appelli)) {
-              ?>
-                <table class="table mx-2">
-                  <thead>
-                    <tr>
-                      <th scope="col">Nome esame</th>
-                      <th scope="col">Data appello</th>
-                      <th scope="col"></th>
-                      <th scope="col"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <?php
-                    foreach ($appelli as $appello) { ?>
+                <?php
+                if (!empty($appelli)) {
+                ?>
+                  <table class="table mx-2">
+                    <thead>
                       <tr>
-                        <td><?php echo $appello['nome']; ?></td>
-                        <td><?php echo $appello['data']; ?></td>
-                        <td>
-                          <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-                            <input type="hidden" name="rimuovi_appello" value="<?php echo $appello['id_appello']; ?>">
-                            <button type="submit" class="btn btn-light ">Rimuovi appello</button>
-                          </form>
-                        </td>
-                        <td>
-                          <form method="GET" action="./registraVoti.php">
-                            <input type="hidden" name="codice_esame" value="<?php echo $codice_esame; ?>">
-                            <input type="hidden" name="id_appello" value="<?php echo $appello['id_appello']; ?>">
-                            <button type="submit" class="btn btn-light">Registra voti</button>
-                          </form>
-                        </td>
+                        <th scope="col">Nome esame</th>
+                        <th scope="col">Data appello</th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
                       </tr>
-                    <?php } ?>
-                  </tbody>
-                </table>
-              <?php } else { ?>
-                <div class="alert alert-secondary mt-3">Non è stata programmato nessun appello</div>
-              <?php }
+                    </thead>
+                    <tbody>
+                      <?php
+                      foreach ($appelli as $appello) { ?>
+                        <tr>
+                          <td><?php echo $appello['nome']; ?></td>
+                          <td><?php echo $appello['data']; ?></td>
+                          <td>
+                            <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                              <input type="hidden" name="rimuovi_appello" value="<?php echo $appello['id_appello']; ?>">
+                              <button type="submit" class="btn btn-light ">Rimuovi appello</button>
+                            </form>
+                          </td>
+                          <td>
+                            <form method="GET" action="./registraVoti.php">
+                              <input type="hidden" name="codice_esame" value="<?php echo $esame; ?>">
+                              <input type="hidden" name="id_appello" value="<?php echo $appello['id_appello']; ?>">
+                              <button type="submit" class="btn btn-light">Registra voti</button>
+                            </form>
+                          </td>
+                        </tr>
+                      <?php } ?>
+                    </tbody>
+                  </table>
+                <?php } else { ?>
+                  <div class="alert alert-secondary mt-3">Non è stato programmato nessun appello</div>
+                <?php }
 
-              if (isset($_POST['rimuovi_appello']) && $rimozione == "") {
-                echo '<div class="alert alert-success mt-3">Appello rimosso con successo!</div>';
-              } elseif (isset($_POST['rimuovi_esame'])) {
-                echo '<div class="alert alert-danger mt-3">Qualcosa è andato storto nella rimozione</div>';
-              }
-              ?>
-              <form method="GET" action="./inserimentoAppello.php">
-                <input type="hidden" name="codice_esame" value="<?php echo $codice_esame; ?>">
-                <input type="hidden" name="corso_studi" value="<?php echo $insegnamento['corso_studi']; ?>">
-                <button type="submit" class="btn custom-btn my-2 my-sm-0">Inserisci un nuovo appello</button>
-              </form>
-            </div>
+                if (isset($_POST['rimuovi_appello']) && $rimozione == "") {
+                  echo '<div class="alert alert-success mt-3">Appello rimosso con successo!</div>';
+                } elseif (isset($_POST['rimuovi_esame'])) {
+                  echo '<div class="alert alert-danger mt-3">Qualcosa è andato storto nella rimozione</div>';
+                }
+                ?>
+                <form method="GET" action="./inserimentoAppello.php">
+                  <input type="hidden" name="codice_esame" value="<?php echo $esame; ?>">
+                  <input type="hidden" name="corso_studi" value="<?php echo $insegnamento['corso_studi']; ?>">
+                  <button type="submit" class="btn custom-btn my-2 my-sm-0">Inserisci un nuovo appello</button>
+                </form>
+              </div>
           <?php
+            }
           }
           ?>
 

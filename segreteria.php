@@ -1,5 +1,5 @@
 <?php
-ini_set("display_errors", "Off");
+ini_set("display_errors", "On");
 ini_set("error_reporting", E_ALL);
 include_once('lib/functions.php');
 
@@ -57,7 +57,7 @@ if (isset($_POST['cerca_utente'])) {
     $insegnamenti_docente = getInsegnamentiDocete($info_utente['id']);
   }
   $_SESSION['info_utente'] = $info_utente;
-} elseif (!isset($_POST['carriera_valida']) && !isset($_POST['carriera_completa'])) {
+} elseif (!isset($_POST['carriera_valida']) && !isset($_POST['carriera_completa']) && !isset($_POST['carriera_completa_storico']) && !isset($_POST['carriera_valida_storico'])) {
   unset($_SESSION['info_utente']);
 }
 
@@ -123,8 +123,6 @@ if (isset($_POST['elimina_insegnamento'])) {
 if ($_SESSION['tipo_utente'] != 'segreteria') {
   header('Location: ' . $_SESSION['tipo_utente'] . '.php');
 }
-
-
 
 ?>
 
@@ -284,7 +282,7 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
               <button type="submit" class="btn custom-btn my-1">Cerca</button>
             </form>
             <?php
-            if (isset($_POST['cerca_utente']) || isset($_POST['carriera_valida']) || isset($_POST['carriera_completa'])) {
+            if (isset($_POST['cerca_utente']) || isset($_POST['carriera_valida']) || isset($_POST['carriera_completa']) || isset($_POST['carriera_completa_storico']) || isset($_POST['carriera_valida_storico'])) {
               if (isset($_SESSION['info_utente'])) {
                 $id_utente = $_SESSION['info_utente']['id'];
             ?> <div class="card p-4 my-3" id="info_utente">
@@ -308,28 +306,62 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
                       <label class="fs-6 "><strong>Corso di studi: </strong><?php echo ($_SESSION['info_utente']['nome_corso']); ?></label>
                     </div>
                     <div class="d-flex mb-1">
-                      <label class="fs-6 "><strong>Anno di frequenza: </strong><?php echo ($_SESSION['info_utente']['anno_frequenza']); ?></label>
-                    </div>
-                    <div class="d-flex mb-1">
                       <label class="fs-6 "><strong>Anno di iscrizione: </strong><?php echo ($_SESSION['info_utente']['anno_iscrizione']); ?></label>
                     </div>
-                    <div class="d-flex my-2">
-                      <form class="" method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#info_utente" ?>">
-                        <input type="hidden" name="carriera_valida" value="carriera_valida">
-                        <button type="submit" class="btn custom-btn">Carriera valida</button>
-                      </form>
-                      <form class="mx-3" method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#info_utente" ?>">
-                        <input type="hidden" name="carriera_completa" value="carriera_completa">
-                        <button type="submit" class="btn custom-btn">Carriera completa</button>
-                      </form>
-                    </div>
                     <?php
+                    if (isset($_SESSION['info_utente']['anno_frequenza'])) {
+                    ?>
+                      <div class="d-flex mb-1">
+                        <label class="fs-6 "><strong>Anno di frequenza: </strong><?php echo ($_SESSION['info_utente']['anno_frequenza']); ?></label>
+                      </div>
+                    <?php
+                    } else {
+                      $storico = 1;
+                    ?>
+                      <div class="d-flex mb-1">
+                        <label class="fs-6 text-danger"><strong>Lo studente non è attualmente iscritto</strong></label>
+                      </div>
+                    <?php
+                    }
+                    if (!isset($storico)) {
+                    ?>
+                      <div class="d-flex my-2">
+                        <form class="" method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#info_utente" ?>">
+                          <input type="hidden" name="carriera_valida" value="carriera_valida">
+                          <button type="submit" class="btn custom-btn">Carriera valida</button>
+                        </form>
+                        <form class="mx-3" method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#info_utente" ?>">
+                          <input type="hidden" name="carriera_completa" value="carriera_completa">
+                          <button type="submit" class="btn custom-btn">Carriera completa</button>
+                        </form>
+                      </div>
+                    <?php
+                    } else {
+                    ?>
+                      <div class="d-flex my-2">
+                        <form class="" method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#info_utente" ?>">
+                          <input type="hidden" name="carriera_valida_storico" value="carriera_valida_storico">
+                          <button type="submit" class="btn custom-btn">Carriera valida</button>
+                        </form>
+                        <form class="mx-3" method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#info_utente" ?>">
+                          <input type="hidden" name="carriera_completa_storico" value="carriera_completa_storico">
+                          <button type="submit" class="btn custom-btn">Carriera completa</button>
+                        </form>
+                      </div>
+                    <?php
+                    }
+                    $voti = array();
                     if (isset($_POST['carriera_valida'])) {
                       $voti = getCarrieraValida($_SESSION['info_utente']['id']);
                     } elseif (isset($_POST['carriera_completa'])) {
                       $voti = getCarrieraCompleta($_SESSION['info_utente']['id']);
+                    } elseif (isset($_POST['carriera_valida_storico'])) {
+                      $voti = getCarrieraValidaStorico($_SESSION['info_utente']['id']);
+                    } elseif (isset($_POST['carriera_completa_storico'])) {
+                      $voti = getCarrieraCompletaStorico($_SESSION['info_utente']['id']);
                     }
-                    if (isset($voti)) {
+
+                    if (count($voti) > 0) {
                     ?>
                       <table class="table" id="carriera">
                         <thead>
@@ -352,16 +384,19 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
                         </tbody>
                       </table>
                     <?php
-                    } elseif (isset($_POST['carriera_valida']) || isset($_POST['carriera_completa'])) { ?>
+                    } elseif (isset($_POST['carriera_valida']) || isset($_POST['carriera_completa']) || isset($_POST['carriera_completa_storico']) || isset($_POST['carriera_valida_storico'])) { ?>
                       <div class="alert alert-danger my-3">Nessun esame disponibile.</div>
-                    <?php } ?>
-                    <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#inserimento_utente" ?>">
-                      <input type="hidden" name="elimina_studente" value="<?php echo $_SESSION['info_utente']['id'] ?>">
-                      <button type="submit" class="btn btn-danger my-2">Elimina utente</button>
-                    </form>
-                  <?php
+                    <?php }
+                    if (!isset($storico)) {
+                    ?>
+                      <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#inserimento_utente" ?>">
+                        <input type="hidden" name="elimina_studente" value="<?php echo $_SESSION['info_utente']['id'] ?>">
+                        <button type="submit" class="btn btn-danger my-2">Elimina utente</button>
+                      </form>
+                    <?php
+                    }
                   } else {
-                  ?>
+                    ?>
                     <div class="d-flex mb-1">
                       <label class="fs-6 "><strong>Specializzazione: </strong><?php echo ($info_utente['specializzazione']); ?></label>
                     </div>
