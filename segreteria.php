@@ -182,7 +182,7 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
               $tipo = $_POST['inserimento_utente'];
               if ($tipo == 'inserimento_studente') {
             ?>
-                <form class="border-top border-bottom py-4 mt-4" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                <form class="border-top border-bottom py-4 mt-4" action="<?php echo $_SERVER['PHP_SELF'] . '#form_inserimento_utente'; ?>" id="form_inserimento_utente" method="POST">
                   <input type="hidden" name="inserimento_utente" value="inserimento_studente">
                   <h6 class="mb-2 text-uppercase">Inserimento studente</h6>
                   <h6 class="text-secondary">Completare i campi per inserire un nuovo studente</h6>
@@ -219,7 +219,7 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
               <?php
               } elseif ($tipo == 'inserimento_docente') {
               ?>
-                <form class="border-top border-bottom py-4 mt-4" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                <form class="border-top border-bottom py-4 mt-4" action="<?php echo $_SERVER['PHP_SELF'] . '#form_inserimento_utente'; ?>" id="form_inserimento_utente" method="POST">
                   <input type="hidden" name="inserimento_utente" value="inserimento_docente">
                   <h6 class="mb-2 text-uppercase">Inserimento docente</h6>
                   <h6 class="text-secondary">Completare i campi per inserire un nuovo docente</h6>
@@ -480,7 +480,7 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
               $tipo = $_POST['inserimento'];
               if ($tipo == 'inserimento_corso') {
             ?>
-                <form class="border-top border-bottom py-4 mt-4" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                <form class="border-top border-bottom py-4 mt-4" action="<?php echo $_SERVER['PHP_SELF'] . '#inserimento_corso'; ?>" id="inserimento_corso" method="POST">
                   <h6 class="mb-2 text-uppercase">Inserimento corso</h6>
                   <h6 class="text-secondary">Completare i campi per inserire un nuovo corso</h6>
                   <input type="hidden" name="inserimento" value="inserimento_corso">
@@ -513,7 +513,7 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
               <?php
               } elseif ($tipo == 'inserimento_insegnamento') {
               ?>
-                <form class="border-top border-bottom py-4 mt-4" action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                <form class="border-top border-bottom py-4 mt-4" action="<?php echo $_SERVER['PHP_SELF'] . '#inserimento_insegnamento'; ?>" id="inserimento_insegnamento" method="POST">
                   <input type="hidden" name="inserimento" value="inserimento_insegnamento">
                   <h6 class="mb-2 text-uppercase">Inserimento insegnamento</h6>
                   <h6 class="text-secondary">Completare i campi per inserire un nuovo insegnamento</h6>

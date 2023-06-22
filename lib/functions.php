@@ -405,6 +405,29 @@ function removeCorso($codice_corso)
 {
     $err = '';
     $db = open_pg_connection();
+
+    $sql = "SELECT count(*) FROM portale_uni.insegnamento WHERE corso_studi = $1;";
+    $params = array(
+        $codice_corso
+    );
+
+    $result = pg_prepare($db, "verifica_corso_rimuovi", $sql);
+    $result = pg_execute($db, "verifica_corso_rimuovi", $params);
+
+    $count = 0;
+    if ($row = pg_fetch_assoc($result)) {
+        $count = $row['count'];
+    }
+
+    if ($count == 0) {
+        $err = "";
+    } else {
+        $err = "Il corso è ancora associato a degli insegnamenti, prima di rimuove il corso procedere a rimuove gli insegnamenti del corso.";
+        close_pg_connection($db);
+
+        return $err;
+    }
+
     $sql = "DELETE FROM portale_uni.corso WHERE codice = $1;";
     $params = array(
         $codice_corso
@@ -418,7 +441,6 @@ function removeCorso($codice_corso)
     } else {
         $err = "Si è verificato un errore durante la rimozione del corso.";
     }
-
     close_pg_connection($db);
 
     return $err;

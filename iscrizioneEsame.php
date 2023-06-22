@@ -99,7 +99,7 @@ if (isset($_POST['codice_esame']) && isset($_POST['id_appello'])) {
                                         }
                                         ?>
                                         <td>
-                                            <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                                            <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . '#alert'; ?>">
                                                 <input type="hidden" name="codice_esame" value="<?php echo $esame['codice']; ?>">
                                                 <input type="hidden" name="id_appello" value="<?php echo $esame['id_appello']; ?>">
                                                 <button type="submit" class="btn btn-light ">Iscriviti</button>
@@ -122,6 +122,9 @@ if (isset($_POST['codice_esame']) && isset($_POST['id_appello'])) {
                     }
                     ?>
 
+                </div>
+                <!-- questo div mi serve solo per fare il redirect agli alert -->
+                <div class="" id="alert">
                 </div>
             </div>
         </div>
