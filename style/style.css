@@ -17,12 +17,12 @@ html, body{
 }
 
 .btn{
-    background-color: #0466C8;
+    background-color: #125dad;
     color: #fff;
 }
 
 .btn:hover{
-    background-color: #0353A4;
+    background-color: #023E7D;
     color: #fff;
 }
 

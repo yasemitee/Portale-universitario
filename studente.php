@@ -35,7 +35,6 @@ if (isset($logged)) {
 if (isset($_POST['rimuovi_esame'])) {
   $id_iscrizione = $_POST['rimuovi_esame'];
   $rimozione = removeIscrizione($id_iscrizione);
-  header("Location: " . $_SERVER['PHP_SELF'] . "#esami");
 }
 
 if ($_SESSION['tipo_utente'] != 'studente') {
@@ -123,7 +122,9 @@ if ($_SESSION['tipo_utente'] != 'studente') {
               </tbody>
             </table>
           <?php } else { ?>
-            <div class="alert alert-danger mt-3">Nessun insegnamento disponibile.</div>
+            <div class="alert alert-primary mt-3">
+              Nessun insegnamento disponibile.
+            </div>
           <?php } ?>
         </div>
         <!-- Carriera -->
@@ -166,7 +167,7 @@ if ($_SESSION['tipo_utente'] != 'studente') {
                 </table>
               <?php
               } else { ?>
-                <div class="alert alert-danger my-3">Nessun esame disponibile.</div>
+                <div class="alert alert-primary my-3">Nessun esame disponibile.</div>
               <?php } ?>
             </div>
             <div class="tab-pane fade" id="carriera_completa" role="tabpanel" aria-labelledby="completa" tabindex="0">
@@ -199,7 +200,7 @@ if ($_SESSION['tipo_utente'] != 'studente') {
                 </table>
               <?php
               } else { ?>
-                <div class="alert alert-danger my-3">Nessun esame disponibile.</div>
+                <div class="alert alert-primary my-3">Nessun esame disponibile.</div>
               <?php } ?>
             </div>
           </div>
@@ -230,7 +231,7 @@ if ($_SESSION['tipo_utente'] != 'studente') {
                     <td><?php echo $iscrizione['nome']; ?></td>
                     <td><?php echo $iscrizione['data']; ?></td>
                     <td>
-                      <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                      <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#esami"; ?>">
                         <input type="hidden" name="rimuovi_esame" value="<?php echo $iscrizione['id']; ?>">
                         <button type="submit" class="btn btn-light ">Rimuovi</button>
                       </form>
@@ -240,13 +241,15 @@ if ($_SESSION['tipo_utente'] != 'studente') {
               </tbody>
             </table>
           <?php } else { ?>
-            <div class="alert alert-secondary mt-3">Non è stata programmata nessuna iscrizione.</div>
+            <div class="alert alert-primary mt-3">Non è stata programmata nessuna iscrizione.</div>
           <?php }
 
           if (isset($_POST['rimuovi_esame']) && $rimozione == "") {
-            echo '<div class="alert alert-success mt-3">Esame rimosso con successo!</div>';
+          ?><div class="alert alert-success alert-dismissible fade show mt-3">Esame rimosso con successo!<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+          <?php
           } elseif (isset($_POST['rimuovi_esame'])) {
-            echo '<div class="alert alert-danger mt-3">Qualcosa è andato storto nella rimozione</div>';
+          ?><div class="alert alert-danger alert-dismissible fade show mt-3"><i class="fa-solid fa-triangle-exclamation me-2"></i>Qualcosa è andato storto nella rimozione<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+          <?php
           }
           ?>
           <a href="./iscrizioneEsame.php" class="btn custom-btn my-4 p-md-2 mx-auto mx-md-0 w-50">Iscrizione a un nuovo esame</a>

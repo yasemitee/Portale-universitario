@@ -26,6 +26,8 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
   exit();
 }
 
+$corsi = getCorsi();
+
 ?>
 
 <!DOCTYPE html>
@@ -57,34 +59,48 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
               Questa sezione ti permette di scoprire i diversi corsi di laurea
               offerti dall'ateneo
             </h5>
-            <div class="row row-cols-xl-3 g-4">
+            <div class="d-flex flex-column">
+              <form class="form-inline input-group w-25 my-4" method="POST" action="./infoCorso.php">
+                <input class="form-control mr-sm-2" type="search" name='cerca_corso' placeholder="Codice del corso" aria-label="Search">
+                <button type="submit" class="btn custom-btn">
+                  <i class="fas fa-search"></i>
+                </button>
+              </form>
               <?php
-              $corsi = getCorsi();
-              foreach ($corsi as $corso) {
-              ?>
-                <div class="col">
-                  <div class="card mx-auto shadow rounded" style="width: 19rem; height:20rem; border-style: none;">
-                    <div class="card-body">
-                      <h5 class="card-title"><?php echo $corso['nome']; ?></h5>
-                      <h6 class="card-subtitle mb-2 text-body-secondary"> Facoltà:
-                        <?php echo $corso['facoltà']; ?>
-                        <p class="card-text">Durata corso: <?php echo $corso['durata']; ?></p>
-                      </h6>
-                      <p class="card-text h-50" style="display: -webkit-box;-webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden;"><?php echo $corso['descrizione']; ?></p>
-                      <form method="POST" action="./infoCorso.php">
-                        <input type="hidden" name="corso" value="<?php echo htmlspecialchars(json_encode($corso)); ?>">
-                        <button type="submit" class="btn btn-link px-0">Leggi di più</button>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              <?php
+              if (isset($_SESSION['error'])) {
+                echo '<div class="alert alert-danger w-25" role="alert">' . $_SESSION['error'] . '</div>';
               }
               ?>
             </div>
         </div>
+        <div class="row row-cols-xl-3 g-4">
+          <?php
+
+          foreach ($corsi as $corso) {
+          ?>
+            <div class="col">
+              <div class="card mx-auto shadow rounded" style="width: 19rem; height:20rem; border-style: none;">
+                <div class="card-body">
+                  <h5 class="card-title"><?php echo $corso['nome']; ?></h5>
+                  <h6 class="card-subtitle mb-2 text-body-secondary"> Facoltà:
+                    <?php echo $corso['facoltà']; ?>
+                    <p class="card-text">Durata corso: <?php echo $corso['durata']; ?></p>
+                  </h6>
+                  <p class="card-text h-50" style="display: -webkit-box;-webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden;"><?php echo $corso['descrizione']; ?></p>
+                  <form method="POST" action="./infoCorso.php">
+                    <input type="hidden" name="corso" value="<?php echo htmlspecialchars(json_encode($corso)); ?>">
+                    <button type="submit" class="btn btn-link px-0">Leggi di più</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          <?php
+          }
+          ?>
+        </div>
       </div>
     </div>
+  </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 </body>

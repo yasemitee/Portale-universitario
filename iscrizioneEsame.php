@@ -106,14 +106,15 @@ if (isset($_POST['codice_esame']) && isset($_POST['id_appello'])) {
                             </tbody>
                         </table>
                     <?php } else { ?>
-                        <div class="alert alert-danger mt-3">Nessun esame disponibile.</div>
+                        <div class="alert alert-primary mt-3">Nessun esame disponibile.</div>
                     <?php }
                     if (isset($err) && $err == '') {
                     ?>
-                        <div class="alert alert-success mx-auto my-4"><?php echo "Iscrizione andata a buon fine!"; ?></div>
+                        <div class="alert alert-success alert-dismissible fade show mx-auto my-4"><?php echo "Iscrizione andata a buon fine!"; ?><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
                     <?php } elseif (isset($err) && $err != '') {
                     ?>
-                        <div class="alert alert-danger mx-auto my-4"><?php echo $err; ?></div>
+
+                        <div class="alert alert-danger alert-dismissible fade show mx-auto my-4"><i class="fa-solid fa-triangle-exclamation me-2"></i><?php echo $err; ?><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
                     <?php
                     }
                     ?>

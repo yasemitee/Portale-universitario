@@ -71,9 +71,9 @@ if (isset($_POST) && isset($_POST['vecchia_password']) && isset($_POST['nuova_pa
                         <button type="submit" class="btn custom-btn w-100 mt-3">Conferma</button>
                     </form>
                     <?php if (!empty($err)) { ?>
-                        <div class="alert alert-danger  mx-auto my-4"><?php echo $err; ?></div>
+                        <div class="alert alert-danger alert-dismissible fade show mx-auto my-4"><i class="fa-solid fa-triangle-exclamation me-2"></i><?php echo $err; ?><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
                     <?php } elseif (isset($_POST['nuova_password'])) { ?>
-                        <div class="alert alert-success mx-auto my-4"><?php echo 'La password è stata cambiata correttamente'; ?></div>
+                        <div class="alert alert-success alert-dismissible fade show mx-auto my-4 ">La password è stata cambiata correttamente<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
                     <?php
                     }
                     ?>

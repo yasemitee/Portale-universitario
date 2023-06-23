@@ -6,7 +6,7 @@
   font-family: 'Poppins', sans-serif;}
 
 .sidebar{
-  background: linear-gradient(94.21deg, #001233 0.71%, #0466C8 107.86%);
+  background: #001233;
 }
 #content{
     color: #001233;
@@ -43,16 +43,16 @@
   }
 
   .nav-link{
-    color: #0466C8;
+    color: #125dad;
 }
 
   .custom-btn {
-    background-color: #0466C8;
+    background-color: #002855;
     color: #fff;
   }
 
   .custom-btn:hover {
-    background-color: #0353A4;
+    background-color: #023E7D;
     color: #fff;
   }
 
@@ -61,7 +61,11 @@
   }
 
   #informazioni_personali{
-    background: linear-gradient(94.21deg, #0466C8 0.71%, #023E7D 107.86%);
+    background: hsla(219, 100%, 10%, 1);
+    background: linear-gradient(45deg, hsla(219, 100%, 10%, 1) 0%, hsla(211, 97%, 25%, 1) 100%);
+    background: -moz-linear-gradient(45deg, hsla(219, 100%, 10%, 1) 0%, hsla(211, 97%, 25%, 1) 100%);
+    background: -webkit-linear-gradient(45deg, hsla(219, 100%, 10%, 1) 0%, hsla(211, 97%, 25%, 1) 100%);
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#001233", endColorstr="#023E7D", GradientType=1 );
     box-shadow: 0px 16px 32px rgba(4, 102, 200, 0.15);
     border-radius: 22px;
     color: #fff;

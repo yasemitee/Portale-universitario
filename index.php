@@ -48,7 +48,7 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
   <link rel="stylesheet" href="style/style.css?<?php echo time(); ?>">
 </head>
 
-<body style="background-image: url(img/sfondo-login-nuovo.svg);">
+<body style="background-image: url(img/sfondo-scuro-1.svg);">
   <?php
   // se l'utente non e' loggato, mostra form autenticazione
   if (!isset($logged)) {
@@ -64,7 +64,7 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
         <div class="tab-content" id="nav-tabContent">
           <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
             <label class="form-label mt-4">Email</label>
-            <input type="email" class="form-control mb-3" name="email_login" placeholder="name@example.com" />
+            <input type="email" class="form-control mb-3" name="email_login" placeholder="nome@esempio.com" />
             <label class="form-label">Password</label>
             <input type="password" class="form-control mb-3" name="password_login" placeholder="inserisci la password" />
 
@@ -76,8 +76,9 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
         if (!empty($error_msg)) {
 
         ?>
-          <div class="alert alert-danger mt-3">
+          <div class="alert alert-danger alert-dismissible fade show mt-3">
             <p><?php echo $error_msg; ?></p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
           </div>
         <?php
         }

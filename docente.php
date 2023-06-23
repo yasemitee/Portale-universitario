@@ -1,5 +1,5 @@
 <?php
-ini_set("display_errors", "On");
+ini_set("display_errors", "Off");
 ini_set("error_reporting", E_ALL);
 include_once('lib/functions.php');
 
@@ -30,13 +30,11 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
 if (isset($_POST['rimuovi_appello'])) {
   $id_appello = $_POST['rimuovi_appello'];
   $rimozione = removeAppello($id_appello);
-  header("Location: " . $_SERVER['PHP_SELF'] . "#gestione-esami");
 }
 
 if ($_SESSION['tipo_utente'] != 'docente') {
   header('Location: ' . $_SESSION['tipo_utente'] . '.php');
 }
-
 
 ?>
 
@@ -68,8 +66,16 @@ if ($_SESSION['tipo_utente'] != 'docente') {
           <?php
           $info = getInfoDocente($_SESSION['user']);
           ?>
-          <div class="mb-1">
-            <label class="fs-2"><strong><?php echo ($info['nome'] . ' ' . $info['cognome']); ?></strong></label>
+          <div class="d-flex flex-column">
+            <div class="mb-1">
+              <label class="fs-2"><strong><?php echo ($info['nome'] . ' ' . $info['cognome']); ?></strong></label>
+            </div>
+            <div class="mb-1">
+              <label class="fs-6 matricola"><strong>#<?php echo ($info['id']); ?></strong></label>
+            </div>
+          </div>
+          <div class="d-flex mb-1 mt-4">
+            <label class="fs-6 "><strong>Email: </strong><?php echo ($info['email']); ?></label>
           </div>
           <div class="d-flex mb-1">
             <label class="fs-6 "><strong>Specializzazione: </strong><?php echo ($info['specializzazione']); ?></label>
@@ -101,7 +107,7 @@ if ($_SESSION['tipo_utente'] != 'docente') {
               </div>
             <?php } ?>
           <?php } else { ?>
-            <div class="alert alert-secondary mt-3">Nessun insegnamento disponibile</div>
+            <div class="alert alert-primary mt-3">Nessun insegnamento disponibile</div>
           <?php } ?>
         </div>
         <!-- Calendario esami -->
@@ -116,7 +122,8 @@ if ($_SESSION['tipo_utente'] != 'docente') {
           ?>
               <div class=" my-4 p-3" id="esami">
 
-                <h6 class="mb-4 text-uppercase">Appelli di <strong><?php echo $insegnamento['nome'] . " " . $esame ?></strong>
+                <h6 class="mb-4 text-uppercase">Appelli di <strong><?php echo $insegnamento['nome'] ?></strong>
+                  <br><strong class="text-secondary">C.esame: <?php echo $esame ?></strong>
                 </h6>
 
                 <?php
@@ -138,7 +145,7 @@ if ($_SESSION['tipo_utente'] != 'docente') {
                           <td><?php echo $appello['nome']; ?></td>
                           <td><?php echo $appello['data']; ?></td>
                           <td>
-                            <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                            <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#gestione-esami" ?>">
                               <input type="hidden" name="rimuovi_appello" value="<?php echo $appello['id_appello']; ?>">
                               <button type="submit" class="btn btn-light ">Rimuovi appello</button>
                             </form>
@@ -155,14 +162,8 @@ if ($_SESSION['tipo_utente'] != 'docente') {
                     </tbody>
                   </table>
                 <?php } else { ?>
-                  <div class="alert alert-secondary mt-3">Non è stato programmato nessun appello</div>
+                  <div class="alert alert-primary mt-3">Non è stato programmato nessun appello</div>
                 <?php }
-
-                if (isset($_POST['rimuovi_appello']) && $rimozione == "") {
-                  echo '<div class="alert alert-success mt-3">Appello rimosso con successo!</div>';
-                } elseif (isset($_POST['rimuovi_esame'])) {
-                  echo '<div class="alert alert-danger mt-3">Qualcosa è andato storto nella rimozione</div>';
-                }
                 ?>
                 <form method="GET" action="./inserimentoAppello.php">
                   <input type="hidden" name="codice_esame" value="<?php echo $esame; ?>">
@@ -170,11 +171,20 @@ if ($_SESSION['tipo_utente'] != 'docente') {
                   <button type="submit" class="btn custom-btn my-2 my-sm-0">Inserisci un nuovo appello</button>
                 </form>
               </div>
-          <?php
+            <?php
             }
           }
-          ?>
 
+          if (isset($_POST['rimuovi_appello']) && empty($rimozione)) {
+            ?>
+            <div class="alert alert-success alert-dismissible fade show mt-3">Appello rimosso con successo!<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+          <?php
+          } elseif (isset($_POST['rimuovi_appello'])) {
+          ?>
+            <div class="alert alert-danger alert-dismissible fade show mt-3"><i class="fa-solid fa-triangle-exclamation me-2"></i>Qualcosa è andato storto nella rimozione<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+          <?php
+          }
+          ?>
         </div>
 
       </div>

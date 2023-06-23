@@ -1,5 +1,5 @@
 <?php
-ini_set("display_errors", "On");
+ini_set("display_errors", "Off");
 ini_set("error_reporting", E_ALL);
 include_once('lib/functions.php');
 
@@ -99,14 +99,17 @@ if (isset($_POST['codice'], $_POST['nome'], $_POST['descrizione'], $_POST['inser
 //RICERCA CORSO
 if (isset($_POST['cerca_corso'])) {
   $codice_corso = $_POST['cerca_corso'];
-  $info_corso = getInfoCorso($codice_corso);
+  $cc = strtoupper($codice_corso);
+  $info_corso = getInfoCorso($cc);
 }
 
 //RICERCA INSEGNAMENTO
 if (isset($_POST['cerca_insegnamento'])) {
   $codice_insegnamento = $_POST['cerca_insegnamento'];
-  $info_insegnamento = getInfoInsegnamento($codice_insegnamento);
+  $ci = strtoupper($codice_insegnamento);
+  $info_insegnamento = getInfoInsegnamento($ci);
 }
+
 
 //ELIMINA CORSO
 if (isset($_POST['elimina_corso'])) {
@@ -257,14 +260,16 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
             if ((isset($registrazione))) {
               if ($registrazione == true) {
             ?>
-                <div class="alert alert-success mt-3">
-                  <p>Inserimento avvenuto con successo!</p>
+                <div class="alert alert-success alert-dismissible fade show mt-3">
+                  Inserimento avvenuto con successo!
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
               <?php
               } else {
               ?>
-                <div class="alert alert-danger mt-3">
-                  <p>Registrazione non riuscita, ti invitiamo a controllare i campi</p>
+                <div class="alert alert-danger alert-dismissible fade show mt-3">
+                  Registrazione non riuscita, ti invitiamo a controllare i campi inseriti.
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             <?php
               }
@@ -385,7 +390,7 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
                       </table>
                     <?php
                     } elseif (isset($_POST['carriera_valida']) || isset($_POST['carriera_completa']) || isset($_POST['carriera_completa_storico']) || isset($_POST['carriera_valida_storico'])) { ?>
-                      <div class="alert alert-danger my-3">Nessun esame disponibile.</div>
+                      <div class="alert alert-primary my-3">Nessun esame disponibile.</div>
                     <?php }
                     if (!isset($storico)) {
                     ?>
@@ -435,27 +440,27 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
                 </div>
               <?php
               } else {
-              ?><div class="alert alert-danger mt-3">Utente non trovato</div>
+              ?><div class="alert alert-danger alert-dismissible fade show mt-3">Utente non trovato<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
               <?php
               }
             }
-            if (isset($_POST['elimina_studente']) && $rimozione == "") {
+            if (isset($_POST['elimina_studente']) && empty($rimozione)) {
               ?>
-              <div class="alert alert-success mt-3">Studente rimosso con successo!</div>
+              <div class="alert alert-success alert-dismissible fade show mt-3">Studente rimosso con successo!<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
             <?php
             } elseif (isset($_POST['elimina_studente'])) {
             ?>
-              <div class="alert alert-danger mt-3"><?php echo $rimozione ?></div>
+              <div class="alert alert-danger alert-dismissible fade show mt-3"><?php echo $rimozione ?><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
             <?php
             }
 
-            if (isset($_POST['elimina_docente']) && $rimozione == "") {
+            if (isset($_POST['elimina_docente']) && empty($rimozione)) {
             ?>
-              <div class="alert alert-success mt-3">Docente rimosso con successo!</div>
+              <div class="alert alert-success alert-dismissible fade show mt-3">Docente rimosso con successo!<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
             <?php
             } elseif (isset($_POST['elimina_docente'])) {
             ?>
-              <div class="alert alert-danger mt-3"><?php echo $rimozione ?></div>
+              <div class="alert alert-danger alert-dismissible fade show mt-3"><?php echo $rimozione ?><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
             <?php
             }
             ?>
@@ -560,14 +565,16 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
             if ((isset($inserimento))) {
               if ($inserimento == true) {
             ?>
-                <div class="alert alert-success mt-3">
-                  <p>Inserimento avvenuto con successo!</p>
+                <div class="alert alert-success  alert-dismissible fade show mt-3">
+                  Inserimento avvenuto con successo!
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
               <?php
               } else {
               ?>
-                <div class="alert alert-danger mt-3">
-                  <p>Inserimento non riuscito, ti invitiamo a controllare i campi</p>
+                <div class="alert alert-danger alert-dismissible fade show mt-3">
+                  Inserimento non riuscito, ti invitiamo a controllare i campi inseriti.
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             <?php
               }
@@ -630,7 +637,7 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
                         </tbody>
                       </table>
                     <?php } else { ?>
-                      <div class="alert alert-danger mt-3">Nessun insegnamento disponibile.</div>
+                      <div class="alert alert-danger alert-dismissible fade show mt-3">Nessun insegnamento disponibile.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
                     <?php } ?>
                 </div>
                 <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . '#gestione_corsi' ?>">
@@ -640,16 +647,16 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
               </div>
             <?php
             } elseif (isset($_POST['cerca_corso'])) {
-            ?><div class="alert alert-danger mt-3">Corso non trovato</div>
+            ?><div class="alert alert-danger alert-dismissible fade show mt-3">Corso non trovato<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
             <?php
             }
             if (isset($_POST['elimina_corso']) && $rimozione == "") {
             ?>
-              <div class="alert alert-success mt-3">Corso rimosso con successo!</div>
+              <div class="alert alert-success alert-dismissible fade show mt-3">Corso rimosso con successo!<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
             <?php
             } elseif (isset($_POST['elimina_corso'])) {
             ?>
-              <div class="alert alert-danger mt-3"><?php echo $rimozione ?></div>
+              <div class="alert alert-danger alert-dismissible fade show mt-3"><?php echo $rimozione ?><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
             <?php
             }
             ?>
@@ -672,9 +679,9 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
                   <label class="fs-6"><strong>Nome: </strong><?php echo $info_insegnamento['nome']; ?></label>
                 </div>
                 <div class="d-flex mb-1">
-                  <label class="fs-6 "><strong>Codice: </strong><?php echo ($info_insegnamento['codice']); ?></label>
+                  <label class="fs-6"><strong>Codice: </strong><label style="letter-spacing: 1px;"><?php echo ($info_insegnamento['codice']); ?></label></label>
                 </div>
-                <div class="d-flex mb-1">
+                <div class=" d-flex mb-1">
                   <label class="fs-6 "><strong>Anno: </strong><?php echo ($info_insegnamento['anno']); ?></label>
                 </div>
                 <div class="d-flex mb-1">
@@ -693,16 +700,16 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
               </div>
             <?php
             } elseif (isset($_POST['cerca_insegnamento'])) {
-            ?><div class="alert alert-danger mt-3">Insegnamento non trovato</div>
+            ?><div class="alert alert-danger alert-dismissible fade show mt-3">Insegnamento non trovato<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
             <?php
             }
             if (isset($_POST['elimina_insegnamento']) && $rimozione == "") {
             ?>
-              <div class="alert alert-success mt-3">Insegnamento rimosso con successo!</div>
+              <div class="alert alert-success alert-dismissible fade show mt-3">Insegnamento rimosso con successo!<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
             <?php
             } elseif (isset($_POST['elimina_insegnamento'])) {
             ?>
-              <div class="alert alert-danger mt-3"><?php echo $rimozione ?></div>
+              <div class="alert alert-danger alert-dismissible fade show mt-3"><?php echo $rimozione ?><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
             <?php
             }
             ?>

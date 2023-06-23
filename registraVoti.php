@@ -80,10 +80,10 @@ if (isset($_POST) && isset($_POST['matricola']) && isset($_POST['valutazione']))
                     </form>
                     <?php
                     if (isset($_POST['matricola']) && isset($_POST['valutazione']) && empty($err)) {
-                    ?><div class="alert alert-success mt-3">Esame registrato con successo!</div>
+                    ?><div class="alert alert-success alert-dismissible fade show mt-3">Esame registrato con successo!<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
                     <?php
                     } elseif (isset($_POST['matricola']) && isset($_POST['valutazione']) && !empty($err)) {
-                    ?><div class="alert alert-danger mt-3"><?php echo $err; ?></div>
+                    ?><div class="alert alert-danger alert-dismissible fade show mt-3"><i class="fa-solid fa-triangle-exclamation me-2"></i><?php echo $err; ?><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
                     <?php
                     }
                     ?>

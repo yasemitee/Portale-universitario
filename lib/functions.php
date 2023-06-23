@@ -126,7 +126,7 @@ function cambiaPassword($email, $tipo_utente, $vecchia_password, $nuova_password
     $err = '';
 
     if (pg_affected_rows($result) === 0) {
-        $err = "Non è stato possibile cambiare la password, verificare i dati inseriti e riprovare.";
+        $err = "Non è stato possibile cambiare la password, verificare i dati inseriti.";
     }
 
     close_pg_connection($db);
@@ -261,6 +261,7 @@ function inserisciCorso($codice, $nome, $descrizione, $facoltà, $durata)
     close_pg_connection($db);
     return $result !== false;
 }
+
 
 function inserisciInsegnamento($codice, $nome, $corso_studi, $descrizione, $anno, $docente_responsabile, $propedeuticità)
 {

@@ -31,6 +31,20 @@ if (isset($_POST) && isset($_POST['corso'])) {
     $insegnamenti = getInsegnamentiCorso($corso['codice']);
 }
 
+if (isset($_POST) && isset($_POST['cerca_corso'])) {
+    $corsi = getCorsi();
+    $c = strtoupper($_POST['cerca_corso']);
+    $corso = $corsi[$c];
+    if (!isset($corso)) {
+        $_SESSION['error'] = "Il corso $c non esiste";
+        header("Location: corsi.php");
+    } else {
+        unset($_SESSION['error']);
+        $insegnamenti = getInsegnamentiCorso($corso['codice']);
+    }
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -87,7 +101,7 @@ if (isset($_POST) && isset($_POST['corso'])) {
                             <?php
                             }
                         } else { ?>
-                            <div class="alert alert-danger mt-3 mx-3">Nessun insegnamento disponibile per il corso</div>
+                            <div class="alert alert-primary mt-3 mx-3 w-50">Nessun insegnamento disponibile per il corso</div>
                         <?php } ?>
                     </div>
                 </div>

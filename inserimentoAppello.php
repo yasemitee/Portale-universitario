@@ -34,7 +34,11 @@ if (isset($_GET['codice_esame']) && isset($_GET['corso_studi'])) {
 
 if (isset($_POST) && isset($_POST['data_appello'])) {
     $data_appello = $_POST['data_appello'];
-    $err = inserimentoAppello($_SESSION['codice_esame'], $data_appello);
+    if ($data_appello == "") {
+        $err = "Inserire una data valida";
+    } else {
+        $err = inserimentoAppello($_SESSION['codice_esame'], $data_appello);
+    }
 }
 
 
@@ -88,10 +92,10 @@ if (isset($_POST) && isset($_POST['data_appello'])) {
                     </form>
                     <?php
                     if (isset($_POST['data_appello']) && empty($err)) {
-                    ?><div class="alert alert-success mt-3">Appello inserito con successo!</div>
+                    ?><div class="alert alert-success alert-dismissible fade show mt-3">Appello inserito con successo!<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
                     <?php
                     } elseif (isset($_POST['data_appello'])) {
-                    ?><div class="alert alert-danger mt-3"><?php echo $err; ?></div>
+                    ?> <div class="alert alert-danger alert-dismissible fade show mx-auto my-4"><i class="fa-solid fa-triangle-exclamation me-2"></i><?php echo $err; ?><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
                     <?php
                     }
                     ?>
