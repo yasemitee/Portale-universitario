@@ -32,7 +32,7 @@ $voti = getCarrieraValida($_SESSION['id']);
 if (isset($_POST['codice_esame']) && isset($_POST['id_appello'])) {
     $codice_esame = $_POST['codice_esame'];
     $id_appello = $_POST['id_appello'];
-    $err = iscriviEsame($_SESSION['id'], $codice_esame, $info['codice_corso'], $id_appello, $voti);
+    $err = iscriviEsame($_SESSION['id'], $codice_esame, $id_appello);
 }
 ?>
 

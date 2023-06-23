@@ -139,9 +139,11 @@ function cambiaPassword($email, $tipo_utente, $vecchia_password, $nuova_password
 
 function registraStudente($nome, $cognome, $email, $password, $matricola, $corso_studi)
 {
+
     if (empty($nome) || empty($cognome) || empty($password) || empty($email) || empty($matricola) || empty($corso_studi)) {
         return false;
     }
+
 
     $db = open_pg_connection();
 
@@ -183,6 +185,7 @@ function registraDocente($nome, $cognome, $email, $password, $specializzazione)
     if (empty($nome) || empty($cognome) || empty($password) || empty($email) || empty($specializzazione)) {
         return false;
     }
+
 
     $db = open_pg_connection();
 
@@ -352,6 +355,7 @@ function inserisciInsegnamento($codice, $nome, $corso_studi, $descrizione, $anno
  */
 function removeStudente($id_studente)
 {
+
     $err = '';
     $db = open_pg_connection();
     $sql = "DELETE FROM portale_uni.studente WHERE id = $1;";
@@ -684,7 +688,7 @@ function getCarrieraCompleta($id)
     $result = pg_prepare($db, "get_info_carriera_completa", $sql);
     $result = pg_execute($db, "get_info_carriera_completa", $params);
 
-    //è diverso da getCarrieraValid perché sennò mi elimina delle chiavi (non possono esserci duplicati)
+    //è diverso da getCarrieraValida perché sennò mi elimina delle chiavi (non possono esserci duplicati)
     $voti = array();
     $i = 0;
     while ($row = pg_fetch_assoc($result)) {
@@ -710,7 +714,6 @@ function getCarrieraCompletaStorico($id)
     $result = pg_prepare($db, "get_carriera_completa_storico", $sql);
     $result = pg_execute($db, "get_carriera_completa_storico", $params);
 
-    //è diverso da getCarrieraValid perché sennò mi elimina delle chiavi (non possono esserci duplicati)
     $voti = array();
     $i = 0;
     while ($row = pg_fetch_assoc($result)) {
@@ -896,6 +899,12 @@ function getAppelliEsame($codice_esame)
 
 function inserimentoAppello($codice_esame, $data_appello)
 {
+    if (empty($data_appello)) {
+        return "Inserire una data";
+    }
+    if (empty($codice_esame)) {
+        return "Inserire un esame";
+    }
     $db = open_pg_connection();
     $err = "";
 
@@ -916,8 +925,37 @@ function inserimentoAppello($codice_esame, $data_appello)
 
 function registraVoto($matricola, $codice_esame, $valutazione, $id_appello)
 {
+    if (empty($valutazione)) {
+        return "Inserire una valutazione";
+    }
+    if (!is_numeric($valutazione)) {
+        return "La valutazione deve essere un numero";
+    }
+    if ($valutazione < 0 || $valutazione > 30) {
+        return "La valutazione deve essere compresa tra 0 e 30";
+    }
+    if (empty($matricola)) {
+        return "Inserire una matricola";
+    }
+
     $db = open_pg_connection();
     $err = "";
+
+    $sql = "SELECT a.data
+    FROM portale_uni.appello a
+    WHERE a.id = $1";
+    $params = array($id_appello);
+    $result = pg_prepare($db, "get_data_appello", $sql);
+    $result = pg_execute($db, "get_data_appello", $params);
+    if ($row = pg_fetch_assoc($result)) {
+        $data_appello = $row['data'];
+        $data_odierna = date("Y-m-d");
+        if ($data_odierna < $data_appello) {
+            close_pg_connection($db);
+            return "Puoi inserire il voto solo dopo la data dell'appello" . " - " . date("d/m/Y", strtotime($data_appello));
+        }
+    }
+
 
     // Recupero dell'id dello studente
     $sql = "SELECT id
@@ -967,10 +1005,9 @@ function registraVoto($matricola, $codice_esame, $valutazione, $id_appello)
 }
 
 
-function iscriviEsame($id_studente, $codice_esame, $codice_corso, $id_appello, $carriera)
+function iscriviEsame($id_studente, $codice_esame, $id_appello)
 {
     $err = '';
-    $success = '';
     $db = open_pg_connection();
 
 
