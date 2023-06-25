@@ -34,7 +34,7 @@ function login($email, $password)
 
     $params = array(
         $email,
-        $password
+        md5($password)
     );
 
     $logged = null;
@@ -94,6 +94,7 @@ function login($email, $password)
     return array($logged, $header);
 }
 
+
 function cambiaPassword($email, $tipo_utente, $vecchia_password, $nuova_password)
 {
     $db = open_pg_connection();
@@ -116,8 +117,8 @@ function cambiaPassword($email, $tipo_utente, $vecchia_password, $nuova_password
 
     $params = array(
         $email,
-        $vecchia_password,
-        $nuova_password
+        md5($vecchia_password),
+        md5($nuova_password)
     );
 
     $result = pg_prepare($db, "change_password", $sql);
@@ -132,6 +133,7 @@ function cambiaPassword($email, $tipo_utente, $vecchia_password, $nuova_password
     close_pg_connection($db);
     return $err;
 }
+
 
 /**
  * REGISTRAZIONE UTENTI
@@ -168,7 +170,7 @@ function registraStudente($nome, $cognome, $email, $password, $matricola, $corso
         $matricola,
         $corso_studi,
         $email,
-        $password,
+        md5($password),
         $nome,
         $cognome,
     );
@@ -209,7 +211,7 @@ function registraDocente($nome, $cognome, $email, $password, $specializzazione)
     $params = array(
         $specializzazione,
         $email,
-        $password,
+        md5($password),
         $nome,
         $cognome,
     );
@@ -275,10 +277,11 @@ function inserisciInsegnamento($codice, $nome, $corso_studi, $descrizione, $anno
 
     $db = open_pg_connection();
 
-    $sql = "SELECT COUNT(*) FROM portale_uni.insegnamento WHERE codice = $1;";
+    $sql = "SELECT COUNT(*) FROM portale_uni.insegnamento WHERE codice = $1 AND corso_studi = $2;";
 
     $params = array(
-        $codice
+        $codice,
+        $corso_studi
     );
 
     $result = pg_prepare($db, "controllo_esistenza_insegnamento", $sql);
@@ -348,6 +351,45 @@ function inserisciInsegnamento($codice, $nome, $corso_studi, $descrizione, $anno
 
     close_pg_connection($db);
     return $result !== false;
+}
+
+function creaNuovoEsame($codice_esame, $nome, $codice_insegnamento, $corso_studi)
+{
+    $err = '';
+    //controllo esistenza campi
+    if (empty($codice_esame) || empty($nome) || empty($codice_insegnamento) || empty($corso_studi)) {
+        return 'Si è verificato un errore durante la creazione dell\'esame.';
+    }
+    //controllo esistenza esame
+    $db = open_pg_connection();
+    $sql = "SELECT COUNT(*) FROM portale_uni.esame WHERE codice = $1 AND corso_studi = $2;";
+    $params = array(
+        $codice_esame,
+        $corso_studi
+    );
+    $result = pg_prepare($db, "controllo_esistenza_esame", $sql);
+    $result = pg_execute($db, "controllo_esistenza_esame", $params);
+    $count = pg_fetch_result($result, 0, 0);
+    if ($count > 0) {
+        close_pg_connection($db);
+        return 'Esame già esistente.';
+    }
+    //inserimento esame
+    $sql = "INSERT INTO portale_uni.esame(codice, nome, insegnamento, corso_studi)
+            VALUES ($1, $2, $3, $4)";
+    $params = array(
+        $codice_esame,
+        $nome,
+        $codice_insegnamento,
+        $corso_studi
+    );
+    $result = pg_prepare($db, "inserisci_esame", $sql);
+    $result = pg_execute($db, "inserisci_esame", $params);
+    if ($result == false) {
+        close_pg_connection($db);
+        return 'Si è verificato un errore durante la creazione dell\'esame.';
+    }
+    close_pg_connection($db);
 }
 
 /**
@@ -597,11 +639,14 @@ function getInfoInsegnamento($codice_insegnamento)
     $result = pg_prepare($db, "get_info_insegnamento", $sql);
     $result = pg_execute($db, "get_info_insegnamento", $params);
 
-    if ($row = pg_fetch_assoc($result)) {
-        close_pg_connection($db);
-        return $row;
+    $i = 0;
+    $insegnamenti = array();
+    while ($row = pg_fetch_assoc($result)) {
+        $insegnamenti[$i] = $row;
+        $i++;
     }
     close_pg_connection($db);
+    return $insegnamenti;
 }
 
 function getInsegnamentiCorso($corso)

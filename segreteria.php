@@ -107,7 +107,7 @@ if (isset($_POST['cerca_corso'])) {
 if (isset($_POST['cerca_insegnamento'])) {
   $codice_insegnamento = $_POST['cerca_insegnamento'];
   $ci = strtoupper($codice_insegnamento);
-  $info_insegnamento = getInfoInsegnamento($ci);
+  $info_insegnamenti = getInfoInsegnamento($ci);
 }
 
 
@@ -426,9 +426,6 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
                     }
                     ?>
                     </label>
-
-
-
                     <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#inserimento_utente" ?>">
                       <input type="hidden" name="elimina_docente" value="<?php echo $_SESSION['info_utente']['id'] ?>">
                       <button type="submit" class="btn btn-danger my-2">Elimina utente</button>
@@ -672,35 +669,38 @@ if ($_SESSION['tipo_utente'] != 'segreteria') {
               <button type="submit" class="btn custom-btn my-1">Cerca</button>
             </form>
             <?php
-            if (isset($_POST['cerca_insegnamento'], $info_insegnamento)) {
+            if (isset($_POST['cerca_insegnamento'], $info_insegnamenti)) {
+              foreach ($info_insegnamenti as $info_insegnamento) {
             ?> <div class="card p-4 my-3">
-                <h5 class="mb-4 text-uppercase">Informazioni sull'insegnamento </h5>
-                <div class="d-flex mb-1">
-                  <label class="fs-6"><strong>Nome: </strong><?php echo $info_insegnamento['nome']; ?></label>
+                  <h5 class="text-uppercase">Informazioni sull'insegnamento: <?php echo $info_insegnamento['nome'] ?></h5>
+                  <h6 class="mb-4 text-secondary">Del corso di studi: <?php echo $info_insegnamento['corso_studi'] ?></h6>
+                  <div class="d-flex mb-1">
+                    <label class="fs-6"><strong>Nome: </strong><?php echo $info_insegnamento['nome']; ?></label>
+                  </div>
+                  <div class="d-flex mb-1">
+                    <label class="fs-6"><strong>Codice: </strong><label style="letter-spacing: 1px;"><?php echo ($info_insegnamento['codice']); ?></label></label>
+                  </div>
+                  <div class=" d-flex mb-1">
+                    <label class="fs-6 "><strong>Anno: </strong><?php echo ($info_insegnamento['anno']); ?></label>
+                  </div>
+                  <div class="d-flex mb-1">
+                    <label class="fs-6 "><strong>Corso di studi: </strong><?php echo ($info_insegnamento['corso_studi']); ?></label>
+                  </div>
+                  <div class="d-flex mb-1">
+                    <label class="fs-6 "><strong>Docente responsabile: </strong><?php echo ($info_insegnamento['nome_docente'] . " " . $info_insegnamento['cognome_docente']); ?></label>
+                  </div>
+                  <div class="d-flex mb-1">
+                    <label class="fs-6 "><strong>Descrizione: </strong><?php echo ($info_insegnamento['descrizione']); ?></label>
+                  </div>
+                  <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . '#gestione_insegnamenti' ?>">
+                    <input type="hidden" name="elimina_insegnamento" value="<?php echo $info_insegnamento['codice'] ?>">
+                    <button type="submit" class="btn btn-danger my-2">Elimina insegnamento</button>
+                  </form>
                 </div>
-                <div class="d-flex mb-1">
-                  <label class="fs-6"><strong>Codice: </strong><label style="letter-spacing: 1px;"><?php echo ($info_insegnamento['codice']); ?></label></label>
-                </div>
-                <div class=" d-flex mb-1">
-                  <label class="fs-6 "><strong>Anno: </strong><?php echo ($info_insegnamento['anno']); ?></label>
-                </div>
-                <div class="d-flex mb-1">
-                  <label class="fs-6 "><strong>Corso di studi: </strong><?php echo ($info_insegnamento['corso_studi']); ?></label>
-                </div>
-                <div class="d-flex mb-1">
-                  <label class="fs-6 "><strong>Docente responsabile: </strong><?php echo ($info_insegnamento['nome_docente'] . " " . $info_insegnamento['cognome_docente']); ?></label>
-                </div>
-                <div class="d-flex mb-1">
-                  <label class="fs-6 "><strong>Descrizione: </strong><?php echo ($info_insegnamento['descrizione']); ?></label>
-                </div>
-                <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . '#gestione_insegnamenti' ?>">
-                  <input type="hidden" name="elimina_insegnamento" value="<?php echo $info_insegnamento['codice'] ?>">
-                  <button type="submit" class="btn btn-danger my-2">Elimina insegnamento</button>
-                </form>
-              </div>
-            <?php
+              <?php
+              }
             } elseif (isset($_POST['cerca_insegnamento'])) {
-            ?><div class="alert alert-danger alert-dismissible fade show mt-3">Insegnamento non trovato<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+              ?><div class="alert alert-danger alert-dismissible fade show mt-3">Insegnamento non trovato<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
             <?php
             }
             if (isset($_POST['elimina_insegnamento']) && $rimozione == "") {

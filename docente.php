@@ -36,6 +36,14 @@ if ($_SESSION['tipo_utente'] != 'docente') {
   header('Location: ' . $_SESSION['tipo_utente'] . '.php');
 }
 
+if (isset($_POST['codice_insegnamento']) && isset($_POST['codice_esame']) && isset($_POST['nome_esame']) && isset($_POST['corso_studi'])) {
+  $codice_insegnamento = $_POST['codice_insegnamento'];
+  $corso_studi = $_POST['corso_studi'];
+  $nome = $_POST['nome_esame'];
+  $codice_esame = $_POST['codice_esame'];
+  $err_creazione = creaNuovoEsame($codice_esame, $nome, $codice_insegnamento, $corso_studi);
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -93,7 +101,7 @@ if ($_SESSION['tipo_utente'] != 'docente') {
           ?>
               <div class="card my-4 border" style="max-width: 540px; border-style: none;">
                 <div class="row g-0">
-                  <div class="col-md-5 py-3 py-md-5 px-3">
+                  <div class="col-md-5 py-3 py-md-3 px-3">
                     <h5 class="card-title mb-3"><?php echo $insegnamento['nome'] ?></h5>
                     <h6 class="card-text"><strong>Corso di studi: </strong><?php echo $insegnamento['corso_studi'] ?></h6>
                     <h6 class="card-text"><strong>Anno: </strong><?php echo $insegnamento['anno'] ?></h6>
@@ -104,11 +112,51 @@ if ($_SESSION['tipo_utente'] != 'docente') {
                     <h6 class="card-text"><?php echo $insegnamento['descrizione'] ?> </h6>
                   </div>
                 </div>
+                <form method="POST" action="<?php echo $_SERVER['PHP_SELF'] . "#insegnamenti" ?>">
+                  <input type="hidden" name="inserimento" value="<?php echo $insegnamento['codice'] ?>">
+                  <button type="submit" class="btn btn-light mt-1 mb-3">> Inserisci esame</button>
+                </form>
               </div>
-            <?php } ?>
-          <?php } else { ?>
+              <?php
+              if (isset($_POST) && isset($_POST['inserimento'])) {
+                if ($_POST['inserimento'] == $insegnamento['codice']) {
+              ?>
+                  <form class="border-bottom pt-1 pb-4 mt-4" action="<?php echo $_SERVER['PHP_SELF'] . '#inserimenti'; ?>" id="inserimento_corso" method="POST">
+                    <h6 class="mb-2 text-uppercase">Inserimento corso</h6>
+                    <h6 class="text-secondary">Completare i campi per inserire un nuovo esame</h6>
+                    <input type="hidden" name="inserimento" value="inserimento_esame">
+                    <div class="row mt-4">
+                      <div class="col-md-12">
+                        <label for="cognome" class="form-label">Codice</label>
+                        <input type="text" class="form-control mb-3" placeholder="Inserisci il codice" name="codice_esame" />
+                      </div>
+                      <div class="col-md-12">
+                        <label for="nome" class="form-label">Nome</label>
+                        <input type="text" class="form-control mb-3" placeholder="Inserisci il nome" name="nome_esame" />
+                      </div>
+                      <button type="submit" class="btn custom-btn mb-4">Conferma</button>
+                      <input type="hidden" name="corso_studi" value="<?php echo $insegnamento['corso_studi'] ?>">
+                      <input type="hidden" name="codice_insegnamento" value="<?php echo $insegnamento['codice'] ?>">
+                    </div>
+                  </form>
+
+                <?php
+                }
+                ?>
+            <?php
+              }
+            }
+            if ($err_creazione == '' && $_POST['inserimento'] == 'inserimento_esame') {
+              echo '<div class="alert alert-success mt-3">Esame inserito con successo</div>';
+            } elseif (isset($_POST['codice_insegnamento'])) {
+              echo '<div class="alert alert-danger mt-3">' . $err_creazione . '</div>';
+            }
+          } else {
+            ?>
             <div class="alert alert-primary mt-3">Nessun insegnamento disponibile</div>
-          <?php } ?>
+          <?php
+          }
+          ?>
         </div>
         <!-- Calendario esami -->
         <div class="row mx-3 mx-md-5 my-4 p-3 shadow rounded" id="gestione-esami">
@@ -121,7 +169,6 @@ if ($_SESSION['tipo_utente'] != 'docente') {
               $appelli = getAppelliEsame($esame);
           ?>
               <div class=" my-4 p-3" id="esami">
-
                 <h6 class="mb-4 text-uppercase">Appelli di <strong><?php echo $insegnamento['nome'] ?></strong>
                   <br><strong class="text-secondary">C.esame: <?php echo $esame ?></strong>
                 </h6>
@@ -186,10 +233,10 @@ if ($_SESSION['tipo_utente'] != 'docente') {
           }
           ?>
         </div>
-
       </div>
     </div>
   </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 </body>
 
