@@ -41,7 +41,6 @@ if ($_SESSION['tipo_utente'] != 'studente') {
   header('Location: ' . $_SESSION['tipo_utente'] . '.php');
 }
 
-
 ?>
 
 <!DOCTYPE html>

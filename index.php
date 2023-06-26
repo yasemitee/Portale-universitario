@@ -13,7 +13,7 @@ session_start();
 $error_msg = '';
 
 if (isset($_POST) && isset($_POST['email_login']) && isset($_POST['password_login'])) {
-  list($logged, $header) = login($_POST['email_login'], $_POST['password_login']);
+  $logged = login($_POST['email_login'], $_POST['password_login']);
   if (is_null($logged)) {
     $error_msg = 'Credenziali non valide';
   }
@@ -86,7 +86,7 @@ if (isset($_GET) && isset($_GET['log']) && $_GET['log'] == 'del') {
       <?php
       //se l'utente è loggato
     } else if (isset($logged)) {
-      header($header);
+      header('Location: ' . $_SESSION['tipo_utente'] . '.php');
       exit();
     }
       ?>

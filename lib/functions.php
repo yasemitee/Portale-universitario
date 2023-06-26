@@ -38,7 +38,6 @@ function login($email, $password)
     );
 
     $logged = null;
-    $header = null;
 
     $db = open_pg_connection();
 
@@ -66,7 +65,6 @@ function login($email, $password)
         $_SESSION['tipo_utente'] = 'studente';
         $_SESSION['nome'] = $nome;
         $_SESSION['cognome'] = $cognome;
-        $header = 'Location: studente.php';
     } elseif ($row = pg_fetch_assoc($result_docente)) {
         $id = $row['id'];
         $logged = $row['email'];
@@ -76,7 +74,6 @@ function login($email, $password)
         $_SESSION['tipo_utente'] = 'docente';
         $_SESSION['nome'] = $nome;
         $_SESSION['cognome'] = $cognome;
-        $header = 'Location: docente.php';
     } elseif ($row = pg_fetch_assoc($result_segreteria)) {
         $id = $row['id'];
         $logged = $row['email'];
@@ -86,12 +83,11 @@ function login($email, $password)
         $_SESSION['tipo_utente'] = 'segreteria';
         $_SESSION['nome'] = $nome;
         $_SESSION['cognome'] = $cognome;
-        $header = 'Location: segreteria.php';
     }
 
     close_pg_connection($db);
 
-    return array($logged, $header);
+    return $logged;
 }
 
 
